@@ -23,13 +23,13 @@ def validate_login():
         dbcursor.execute(
             "Select password, role from user where username = '{}'".format(request.form['username']))  # get password
         res = dbcursor.fetchone()
-        if request.form['password'] in res:
+        if request.form['password'] in res:  # since fetchone returns tuple
             return dumps({'result': 'true', 'role': res[1]})
         else:
-            return 'false'
+            return dumps({'result': "Wrong Username or Password"})
     except Exception as e:
         print(e)
-        return str(e)
+        return dumps({'result': str(e)})
 
 
 # post request to register a new user
@@ -76,6 +76,7 @@ def register():
         return str(e)
 
 
+# get request to retrieve data to be displayed on homepage from database
 @app.route('/api/retrieve/homepage-data', methods=['GET'])
 def homepage_date():
     data = dict()
