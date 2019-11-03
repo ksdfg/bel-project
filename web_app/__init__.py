@@ -6,6 +6,7 @@ from requests import get, post
 from api import app
 
 app.template_folder = r'K:\bel-project\web_app\templates'
+app.static_folder = r'K:\bel-project\web_app\static'
 app.secret_key = 'IB6TBIUKYBGF76VD'
 
 url = "http://localhost:5000/"
@@ -18,7 +19,7 @@ def homepage():
     data = loads(get(url=url+'api/retrieve/homepage-data', data=dict(session)).text)
     return render_template(
         'homepage.html',
-        username=session['username'],
+        **session,
         **data
     )
 

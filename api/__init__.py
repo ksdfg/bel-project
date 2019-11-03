@@ -74,7 +74,6 @@ def register():
 
 @app.route('/api/retrieve/homepage-data', methods=['GET'])
 def homepage_date():
-    print(request.form['role'])
     data = dict()
 
     if request.form['role'] == 'bel_mgr':

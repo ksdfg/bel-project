@@ -3,37 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <title>CRM</title>
+    <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/main.css') }}">
 </head>
 <body>
 
 <h1><b>Welcome, {{username}}</b></h1>
 <br><br>
-{% if scrap_money %}
-You're gonna lose RS.{{scrap_money}}, Pay Up.
-<br><br>
-{% endif %}
 
-{% if complaints %}
-<table style="width: 50%; border: 1px solid black">
-    <caption>List of high priority complaints :</caption>
-    <thead>
-        <tr>
-            <th>Machine</th>
-            <th>Customer</th>
-            <th>Location</th>
-            <th>Engineer</th>
-        </tr>
-    </thead>
+{% if role == 'bel_mgr' %}
+
+<table>
     <tbody>
-        {% for comp in complaints %}
-        <tr>
-            {% for data in comp %}
-            <td align="center" style="border: 1px solid black">{{data}}</td>
-            {% endfor %}
-        </tr>
-        {% endfor %}
+    {% if scrap_money %}
+    <tr align="center">
+        <td>Total price of material to be replaced</td>
+        <td>{{scrap_money}}</td>
+    </tr>
+    {% endif %}
     </tbody>
 </table>
+<br><br>
+
+{% if complaints %}
+<table>
+    <caption>List of high priority complaints :</caption>
+    <thead>
+    <tr>
+        <th>Machine</th>
+        <th>Customer</th>
+        <th>Location</th>
+        <th>Engineer</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for comp in complaints %}
+    <tr>
+        {% for data in comp %}
+        <td align="center">{{data}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
 {% endif %}
 
 </body>
