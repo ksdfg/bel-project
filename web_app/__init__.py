@@ -1,12 +1,14 @@
 from json import loads
+from os import getcwd
 
 from flask import render_template, redirect, url_for, request, session
 from requests import get, post
 
 from api import app
 
-app.template_folder = r'K:\bel-project\web_app\templates'
-app.static_folder = r'K:\bel-project\web_app\static'
+# set app variables for web_app
+app.template_folder = getcwd() + r'\web_app\templates'
+app.static_folder = getcwd() + r'\web_app\static'
 app.secret_key = 'IB6TBIUKYBGF76VD'
 
 url = "http://localhost:5000/"
@@ -48,8 +50,6 @@ def register_page():
 
 @app.route('/register/submit', methods=["POST"])
 def register_submit():
-    if request.form['password'] != request.form['confirm password']:
-        return render_template("register.html", **request.form, error="passwords don't match dummo, try again")
     res = post(url + "api/register", data=dict(request.form)).text
     if res == 'done':
         return redirect(url_for('login_page'))

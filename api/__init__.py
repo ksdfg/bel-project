@@ -35,6 +35,10 @@ def validate_login():
 # post request to register a new user
 @app.route('/api/register', methods=["POST"])
 def register():
+    # if password is not same in both fields
+    if request.form['password'] != request.form['confirm password']:
+        return "passwords don't match dummo, try again"
+
     # first register user
     try:
         dbcursor.execute("Insert into user values (%s, %s, %s)", (request.form['username'], request.form['password'],
@@ -77,7 +81,6 @@ def homepage_date():
     data = dict()
 
     if request.form['role'] == 'bel_mgr':
-
         # get total scrap value
         dbcursor.execute(
             "Select round(sum(m.price * e.Qty), 3) from eng_scrap e join material m on e.PartNo = m.PartNo")
@@ -90,12 +93,28 @@ def homepage_date():
 
         # get high priority complaints
         dbcursor.execute(
-            "Select t.Machine, c.Name, m.Location, e.Name "
+            "Select t.Machine, c.Name, m.Location, e.Name, t.MadeOn "
             "from (complaint t join engineer e on t.Engineer = e.ID) join "
             "(machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo "
             "where priority = 'High'"
         )
-        res = dbcursor.fetchall()
+        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
+        for i in res:
+            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
         data['complaints'] = res
+
+        # get number of machines under warranty
+        dbcursor.execute("select count(*) from machine where machine.WarrantyExp >= date(now());")  # in warranty
+        res = dbcursor.fetchone()
+        data['warranty_in'] = res[0]
+        dbcursor.execute("select count(*) from machine where machine.AMCExp >= date(now());")  # in warranty
+        res = dbcursor.fetchone()
+        data['amc_in'] = res[0]
+
+        # get number of machines out of amc and warranty
+        dbcursor.execute("select count(*) from machine "
+                         "where machine.AMCExp < date(now()) and machine.WarrantyExp < date(now());")  # in warranty
+        res = dbcursor.fetchone()
+        data['amc_warranty_out'] = res[0]
 
     return dumps(data)
