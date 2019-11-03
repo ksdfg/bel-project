@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+
+<body>
+
+    {% if error %}
+    <p><strong>Error:</strong> {{ error }}
+    {% endif %}
+
+    <form name="loginForm" method="post" action="http://localhost:5000/login/submit">
+
+        <b><h1> LOGIN</h1></b>
+
+        <b>Username : </b><input type="text" name="username" maxlength="10" {% if username %} value= {{ username }} {% endif %}><br><br>
+        <b>Password : </b><input type="password" name="password"><br><br>
+
+        <input type="submit" value="Login">
+    </form>
+    <br>
+    <form name="registerForm" method="get" action="http://localhost:5000/register">
+        <input type="submit" value="Register">
+    </form>
+
+</body>
+</html>

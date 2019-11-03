@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+</head>
+
+<body>
+
+    <b><h1> Register</h1></b>
+
+    {% if error %}
+    <h3 style="color: red"><b>Error : </b>{{error}}</h3>
+    {% endif %}
+
+    {% if role == None %}
+    <form name="registerForm" method="get" action="http://localhost:5000/register">
+        <b>Select role of user : </b>
+        <select name="role">
+            <option value="engineer">Engineer</option>
+            <option value="call_center">Call Center Operative</option>
+            <option value="bel_mgr">BEL Manager</option>
+            <option value="reg_mgr">Regional Center Manager</option>
+        </select>
+        <input type="submit" value="Get Registration Form">
+    </form>
+    {% endif %}
+
+    {% if role %}
+
+    <form name="registerUser" method="post" action="http://localhost:5000/register/submit">
+
+        {% if role == 'engineer' %}
+        <b>Name : </b>
+        <input type="text" name="name" {% if name %} value= {{name}} {% endif %}><br><br>
+        <b>Contact Number : </b>
+        <input type="number" name="contact" maxlength="10" {% if contact %} value= {{contact}} {% endif %}><br><br>
+        <b>Email ID : </b>
+        <input type="text" name="email" {% if email %} value= {{email}} {% endif %}><br><br>
+        <b>Region : </b>
+        <input type="text" name="region" {% if region %} value= {{region}} {% endif %}><br><br>
+        <b>Address : </b>
+        <input type="text" name="address" {% if address %} value= {{address}} {% endif %}><br><br>
+        {% endif %}
+
+        {% if role == 'reg_mgr' %}
+        <b>Region ID : </b>
+        <input type="text" name="id" maxlength="2" {% if id %} value= {{id}} {% endif %}><br><br>
+        <b>Address : </b>
+        <input type="text" name="address" {% if address %} value= {{address}} {% endif %}><br><br>
+        {% endif %}
+
+        <b>Username : </b>
+        <input type="text" name="username" maxlength="10" {% if username %} value= {{username}} {% endif %}><br><br>
+        <b>Password : </b>
+        <input type="password" name="password"><br><br>
+        <b>Confirm Password : </b><input type="password" name="confirm password"><br>
+        <input name="role" value={{role}} style="visibility: hidden"><br>
+
+        <input type="submit" value="Register">
+
+    </form>
+
+    {% endif %}
+
+</body>
+</html>
