@@ -19,7 +19,6 @@ def homepage():
     if 'username' not in session:
         return redirect(url_for('login_page'), 307)  # redirect to login page
     data = loads(get(url=url + 'api/retrieve/homepage-data', data=dict(session)).text)  # get data to be displayed
-    print(data)
     return render_template(
         'homepage.html',
         **session,

@@ -134,19 +134,27 @@ def homepage_date():
             i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
         data['complaints'] = res
 
-        # get all materials that the engineer has
-        print(f"""
-            Select m.Desc, em.Qty
-            from material m join (eng_material em join engineer e on em.Engineer = e.ID) on m.PartNo = em.PartNo
-            where e.username = '{request.form['username']}'
+        # get all machines that are allocated to engineer which are due for pm
+        dbcursor.execute(f"""
+        select m.Location, DATE_ADD(pm.Date, interval 3 month )
+        from pm join machine m on pm.Machine = m.SlNo join engineer e on pm.Engineer = e.ID
+        where e.Username = '{request.form['username']}' and
+            year(DATE_ADD(pm.Date, interval 3 month )) = year(now()) and
+            month(DATE_ADD(pm.Date, interval 3 month )) = month(now()) and
+            (DATE_ADD(pm.Date, interval 3 month ) <= m.WarrantyExp or DATE_ADD(pm.Date, interval 3 month ) < m.AMCExp);
         """)
+        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
+        for i in res:
+            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
+        data['pm'] = res
+
+        # get all materials that the engineer has
         dbcursor.execute(f"""
             Select m.Desc, em.Qty
             from material m join (eng_material em join engineer e on em.Engineer = e.ID) on m.PartNo = em.PartNo
             where e.username = '{request.form['username']}'
         """)
         res = dbcursor.fetchall()
-        print(res)
         data['materials'] = res
 
     return dumps(data)
