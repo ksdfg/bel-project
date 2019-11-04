@@ -14,19 +14,6 @@
     <h3 style="color: red"><b>Error : </b>{{error}}</h3>
     {% endif %}
 
-    {% if role == None %}
-    <form name="registerForm" method="get" action="http://localhost:5000/register">
-        <b>Select role of user : </b>
-        <select name="role">
-            <option value="engineer">Engineer</option>
-            <option value="call_center">Call Center Operative</option>
-            <option value="bel_mgr">BEL Manager</option>
-            <option value="reg_mgr">Regional Center Manager</option>
-        </select>
-        <input type="submit" value="Get Registration Form">
-    </form>
-    {% endif %}
-
     {% if role %}
 
     <form name="registerUser" method="post" action="http://localhost:5000/register/submit">
@@ -60,6 +47,19 @@
 
         <input type="submit" value="Register">
 
+    </form>
+
+    {% else %}
+
+    <form name="registerForm" method="get" action="http://localhost:5000/register">
+        <b>Select role of user : </b>
+        <select name="role">
+            <option value="engineer">Engineer</option>
+            <option value="call_center">Call Center Operative</option>
+            <option value="bel_mgr">BEL Manager</option>
+            <option value="reg_mgr">Regional Center Manager</option>
+        </select>
+        <input type="submit" value="Get Registration Form">
     </form>
 
     {% endif %}

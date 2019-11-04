@@ -36,13 +36,12 @@ def login_page():
 @app.route('/login/submit', methods=['POST'])
 def login_submit():
     response = loads(post(url=url + "api/login", data=dict(request.form)).text)  # login user
-    print(response)
     if response['result'] == 'true':
         # save the username and role in session, then redirect to homepage
         session['username'] = request.form['username']
         session['role'] = response['role']
         return redirect(url_for('homepage'))
-    return render_template('login.html', error=response['result'], username=request.form['name'])
+    return render_template('login.html', username=request.form['username'], error=response['result'])
 
 
 @app.route('/register')

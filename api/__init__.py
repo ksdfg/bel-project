@@ -23,7 +23,7 @@ def validate_login():
         dbcursor.execute(
             "Select password, role from user where username = '{}'".format(request.form['username']))  # get password
         res = dbcursor.fetchone()
-        if request.form['password'] in res:  # since fetchone returns tuple
+        if res is not None and request.form['password'] in res:  # since fetchone returns tuple
             return dumps({'result': 'true', 'role': res[1]})
         else:
             return dumps({'result': "Wrong Username or Password"})
