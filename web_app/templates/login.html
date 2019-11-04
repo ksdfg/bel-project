@@ -9,7 +9,7 @@
 <body>
 
     {% if error %}
-    <p><strong>Error:</strong> {{ error }}
+    <h3 style="color: red">Error:  {{ error }}</h3>
     {% endif %}
 
     <form name="loginForm" method="post" action="http://localhost:5000/login/submit">
