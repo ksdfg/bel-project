@@ -127,7 +127,7 @@ def homepage_date():
             "Select t.Machine, c.Name, m.Location, t.MadeOn "
             "from (complaint t join engineer e on t.Engineer = e.ID) join "
             "(machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo "
-            f"where e.username = '{request.form['username']}' and priority = 'High'"
+            f"where e.username = '{request.form['username']}'"
         )
         res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
         for i in res:
