@@ -11,28 +11,21 @@
 <br><br>
 
 {% if role == 'bel_mgr' %}
-
 <table>
     <tbody>
-    {% if warranty_in or warranty_in > -1 %}
+    {% if role == 'bel_mgr' %}
     <tr>
         <td>Number of machines under warranty</td>
         <td>{{warranty_in}}</td>
     </tr>
-    {% endif %}
-    {% if amc_in or amc_in > -1 %}
     <tr>
         <td>Number of machines under amc</td>
         <td>{{amc_in}}</td>
     </tr>
-    {% endif %}
-    {% if amc_warranty_out or amc_warranty_out > -1 %}
     <tr>
         <td>Number of machines out of amc or warranty</td>
         <td>{{amc_warranty_out}}</td>
     </tr>
-    {% endif %}
-    {% if scrap_money %}
     <tr>
         <td>Total price of material to be replaced</td>
         <td>{{scrap_money}}</td>
@@ -41,6 +34,7 @@
     </tbody>
 </table>
 <br><br>
+{% endif %}
 
 {% if complaints %}
 <table>
@@ -50,7 +44,9 @@
         <th>Machine</th>
         <th>Customer</th>
         <th>Location</th>
+        {% if role != 'engineer' %}
         <th>Engineer</th>
+        {% endif %}
         <th>Open Since</th>
     </tr>
     </thead>
@@ -64,13 +60,29 @@
     {% endfor %}
     </tbody>
 </table>
+<br><br>
 {% endif %}
 
-{% elif role == 'engineer' %}
-
-
-
+{% if materials %}
+<table>
+    <thead>
+    <tr>
+        <th>Material Description</th>
+        <th>Quantity</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for material in materials %}
+    <tr>
+        {% for data in material %}
+        <td>{{data}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 {% endif %}
+
 
 </body>
 </html>

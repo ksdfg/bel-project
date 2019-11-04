@@ -23,7 +23,7 @@ def validate_login():
         dbcursor.execute(
             "Select password, role from user where username = '{}'".format(request.form['username']))  # get password
         res = dbcursor.fetchone()
-        if res is not None:
+        if res is None:
             return dumps({'result': "No such Username"})
         elif request.form['password'] in res:  # since fetchone returns tuple
             return dumps({'result': 'true', 'role': res[1]})
@@ -120,5 +120,33 @@ def homepage_date():
                          "where machine.AMCExp < date(now()) and machine.WarrantyExp < date(now());")  # in warranty
         res = dbcursor.fetchone()
         data['amc_warranty_out'] = res[0]
+
+    elif request.form['role'] == 'engineer':
+        # get all open complaints assigned to the engineer
+        dbcursor.execute(
+            "Select t.Machine, c.Name, m.Location, t.MadeOn "
+            "from (complaint t join engineer e on t.Engineer = e.ID) join "
+            "(machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo "
+            f"where e.username = '{request.form['username']}' and priority = 'High'"
+        )
+        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
+        for i in res:
+            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
+        data['complaints'] = res
+
+        # get all materials that the engineer has
+        print(f"""
+            Select m.Desc, em.Qty
+            from material m join (eng_material em join engineer e on em.Engineer = e.ID) on m.PartNo = em.PartNo
+            where e.username = '{request.form['username']}'
+        """)
+        dbcursor.execute(f"""
+            Select m.Desc, em.Qty
+            from material m join (eng_material em join engineer e on em.Engineer = e.ID) on m.PartNo = em.PartNo
+            where e.username = '{request.form['username']}'
+        """)
+        res = dbcursor.fetchall()
+        print(res)
+        data['materials'] = res
 
     return dumps(data)
