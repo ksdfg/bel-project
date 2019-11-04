@@ -61,7 +61,8 @@ def register():
                                  request.form['region'], request.form['address'], request.form['username']
                              ))
         elif request.form['role'] == 'reg_mgr':
-            dbcursor.execute("Insert into reg_center values (%s, %s)", (request.form['id'], request.form['address']))
+            dbcursor.execute("Insert into reg_center values (%s, %s, %s)",
+                             (request.form['id'], request.form['address'], request.form['username']))
         elif request.form['role'] == 'bel_mgr':
             pass
         elif request.form['role'] == 'call_centre':
