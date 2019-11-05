@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>CRM</title>
+    <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/w3.css') }}">
     <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/main.css') }}">
 </head>
 <body>
 
-<h1><b>Welcome, {{username}}</b></h1>
-<br><br>
+<p align="center" style="font-size: xx-large">
+    <img src="{{ url_for(endpoint='static', filename='images/bel.png') }}" align="left">
+    <b>Welcome, {{username}}</b>
+</p>
+<br><br><br><br><br>
 
 {% if role == 'bel_mgr' or role == 'call_center' %}
 <table>
