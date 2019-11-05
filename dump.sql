@@ -411,7 +411,7 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `username` varchar(10) NOT NULL,
   `password` varchar(30) NOT NULL,
-  `role` varchar(10) DEFAULT NULL,
+  `role` enum('engineer','bel_mgr','reg_mgr','call_center') NOT NULL,
   PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -422,7 +422,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` (`username`, `password`, `role`) VALUES ('akasheng','singh','engineer'),('er_admin','east','reg_mgr'),('geneng','password','engineer'),('iyeng','sweets','engineer'),('ksdfg','123','bel_mgr'),('nr_admin','north','reg_mgr'),('pateleng','gujju','engineer'),('snd','ksh31jan','bel_mgr'),('sr_admin','south','reg_mgr'),('wr_admin','west','reg_mgr');
+INSERT INTO `user` (`username`, `password`, `role`) VALUES ('akasheng','singh','engineer'),('baymax','balalala','call_center'),('er_admin','east','reg_mgr'),('geneng','password','engineer'),('iyeng','sweets','engineer'),('ksdfg','123','bel_mgr'),('nr_admin','north','reg_mgr'),('pateleng','gujju','engineer'),('snd','ksh31jan','bel_mgr'),('sr_admin','south','reg_mgr'),('wr_admin','west','reg_mgr');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -435,4 +435,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-11-04 22:47:29
+-- Dump completed on 2019-11-05  0:02:17

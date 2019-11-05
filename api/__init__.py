@@ -21,7 +21,7 @@ dbcursor = db.cursor()  # cursor that'll allow us to execute queries
 def validate_login():
     try:
         dbcursor.execute(
-            "Select password, role from user where username = '{}'".format(request.form['username']))  # get password
+            f"Select password, role from user where username = '{request.form['username']}'")  # get password
         res = dbcursor.fetchone()
         if res is None:
             return dumps({'result': "No such Username"})
@@ -67,7 +67,7 @@ def register():
                              (request.form['id'], request.form['address'], request.form['username']))
         elif request.form['role'] == 'bel_mgr':
             pass
-        elif request.form['role'] == 'call_centre':
+        elif request.form['role'] == 'call_center':
             pass
         else:
             return "What role is this?"
@@ -84,7 +84,7 @@ def register():
 def homepage_date():
     data = dict()
 
-    if request.form['role'] == 'bel_mgr':
+    if request.form['role'] == 'bel_mgr' or request.form['role'] == 'call_center':
         # get total scrap value
         dbcursor.execute(
             "Select round(sum(m.price * e.Qty), 3) from eng_scrap e join material m on e.PartNo = m.PartNo")
@@ -96,12 +96,12 @@ def homepage_date():
         data['scrap_money'] += res[0]
 
         # get high priority complaints
-        dbcursor.execute(
-            "Select t.Machine, c.Name, m.Location, e.Name, t.MadeOn "
-            "from (complaint t join engineer e on t.Engineer = e.ID) join "
-            "(machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo "
-            "where priority = 'High'"
-        )
+        dbcursor.execute(f"""
+            Select t.Machine, c.Name, m.Location, e.Name, t.MadeOn
+            from (complaint t join engineer e on t.Engineer = e.ID) join
+            (machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo
+            where t.Priority = 'High' and t.Status = 'Open'
+        """)
         res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
         for i in res:
             i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
@@ -116,19 +116,21 @@ def homepage_date():
         data['amc_in'] = res[0]
 
         # get number of machines out of amc and warranty
-        dbcursor.execute("select count(*) from machine "
-                         "where machine.AMCExp < date(now()) and machine.WarrantyExp < date(now());")  # in warranty
+        dbcursor.execute("""
+            select count(*) from machine 
+            where machine.AMCExp < date(now()) and machine.WarrantyExp < date(now());
+        """)  # in warranty
         res = dbcursor.fetchone()
         data['amc_warranty_out'] = res[0]
 
     elif request.form['role'] == 'engineer':
         # get all open complaints assigned to the engineer
-        dbcursor.execute(
-            "Select t.Machine, c.Name, m.Location, t.MadeOn "
-            "from (complaint t join engineer e on t.Engineer = e.ID) join "
-            "(machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo "
-            f"where e.username = '{request.form['username']}'"
-        )
+        dbcursor.execute(f"""
+            Select t.Machine, c.Name, m.Location, t.MadeOn
+            from (complaint t join engineer e on t.Engineer = e.ID) join
+            (machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo
+            where e.username = '{request.form['username']}' and t.Status = 'Open'
+        """)
         res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
         for i in res:
             i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
@@ -156,5 +158,51 @@ def homepage_date():
         """)
         res = dbcursor.fetchall()
         data['materials'] = res
+
+    elif request.form['role'] == 'reg_mgr':
+        # get all open complaints assigned to all engineers in the region
+        dbcursor.execute(f"""
+            Select t.Machine, c.Name, m.Location, e.Name, t.MadeOn
+            from (complaint t join (engineer e join reg_center rc on e.Region = rc.ID) on t.Engineer = e.ID) join
+                (machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo
+            where rc.username = '{request.form['username']}' and t.Status = 'Open'
+        """)
+        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
+        for i in res:
+            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
+        data['complaints'] = res
+
+        # get all machines that are allocated to all engineers in the region which are due for pm
+        dbcursor.execute(f"""
+        select m.Location, e.Name, DATE_ADD(pm.Date, interval 3 month )
+        from pm join machine m on pm.Machine = m.SlNo join 
+            (engineer e join reg_center rc on e.Region = rc.ID) on pm.Engineer = e.ID
+        where rc.username = '{request.form['username']}' and
+            year(DATE_ADD(pm.Date, interval 3 month )) = year(now()) and
+            month(DATE_ADD(pm.Date, interval 3 month )) = month(now()) and
+            (DATE_ADD(pm.Date, interval 3 month ) <= m.WarrantyExp or DATE_ADD(pm.Date, interval 3 month ) < m.AMCExp);
+        """)
+        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
+        for i in res:
+            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
+        data['pm'] = res
+
+        # get all materials that the regional center has
+        dbcursor.execute(f"""
+            Select m.Desc, rm.Qty
+            from material m join (reg_materials rm join reg_center rc on rm.Region = rc.ID) on m.PartNo = rm.PartNo
+            where rc.username = '{request.form['username']}'
+        """)
+        res = dbcursor.fetchall()
+        data['materials'] = res
+
+        # get all scrap materials that the regional center has
+        dbcursor.execute(f"""
+            Select m.Desc, rm.Qty
+            from material m join (reg_scrap rm join reg_center rc on rm.Region = rc.ID) on m.PartNo = rm.PartNo
+            where rc.username = '{request.form['username']}'
+        """)
+        res = dbcursor.fetchall()
+        data['scrap'] = res
 
     return dumps(data)

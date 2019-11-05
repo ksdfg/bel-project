@@ -10,10 +10,9 @@
 <h1><b>Welcome, {{username}}</b></h1>
 <br><br>
 
-{% if role == 'bel_mgr' %}
+{% if role == 'bel_mgr' or role == 'call_center' %}
 <table>
     <tbody>
-    {% if role == 'bel_mgr' %}
     <tr>
         <td>Number of machines under warranty</td>
         <td>{{warranty_in}}</td>
@@ -30,7 +29,6 @@
         <td>Total price of material to be replaced</td>
         <td>{{scrap_money}}</td>
     </tr>
-    {% endif %}
     </tbody>
 </table>
 <br><br>
@@ -69,6 +67,9 @@
     <thead>
     <tr>
         <th>Machine Location</th>
+        {% if role != 'engineer' %}
+        <th>Engineer</th>
+        {% endif %}
         <th>Date</th>
     </tr>
     </thead>
@@ -85,7 +86,7 @@
 <br><br>
 {% endif %}
 
-{% if role == 'engineer' %}
+{% if role == 'engineer' or role == 'reg_mgr' %}
 <table>
     <caption><h3>List of Materials at hand</h3></caption>
     <thead>
@@ -106,6 +107,31 @@
     {% endif %}
     </tbody>
 </table>
+<br><br>
+{% endif %}
+
+{% if role == 'reg_mgr' %}
+<table>
+    <caption><h3>List of Scrap Materials at hand</h3></caption>
+    <thead>
+    <tr>
+        <th>Material Description</th>
+        <th>Quantity</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if scrap %}
+    {% for material in scrap %}
+    <tr>
+        {% for data in material %}
+        <td>{{data}}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    {% endif %}
+    </tbody>
+</table>
+<br><br>
 {% endif %}
 
 </body>
