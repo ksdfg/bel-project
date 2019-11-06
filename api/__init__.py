@@ -159,13 +159,22 @@ def homepage_date():
         res = dbcursor.fetchall()
         data['materials'] = res
 
+        # get all scrap materials that the regional center has
+        dbcursor.execute(f"""
+            Select m.Desc, em.Qty
+            from material m join (eng_scrap em join engineer e on em.Engineer = e.ID) on m.PartNo = em.PartNo
+            where e.username = '{request.form['username']}'
+        """)
+        res = dbcursor.fetchall()
+        data['scrap'] = res
+
     elif request.form['role'] == 'reg_mgr':
         # get all open complaints assigned to all engineers in the region
         dbcursor.execute(f"""
             Select t.Machine, c.Name, m.Location, e.Name, t.MadeOn
             from (complaint t join (engineer e join reg_center rc on e.Region = rc.ID) on t.Engineer = e.ID) join
                 (machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo
-            where rc.username = '{request.form['username']}' and t.Status = 'Open'
+            where rc.username = '{request.form['username']}' and t.Status = 'Open' and t.Priority = 'High'
         """)
         res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
         for i in res:

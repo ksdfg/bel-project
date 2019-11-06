@@ -1,19 +1,18 @@
 table {
-    font-family: arial, sans-serif;
     border-collapse: collapse;
     width: 50%;
 }
 
 td, th {
-    border: 1px solid #aaaaaa;
+    border: 1px solid #00aeef;
     text-align: center;
     padding: 8px;
 }
 
 th {
-    background-color: #aaaaaa;
+    background-color: #00aeef;
 }
 
-tr:nth-child(even) {
-    background-color: #adcadd;
+tr:nth-child(odd) {
+    background-color: #dddddd;
 }

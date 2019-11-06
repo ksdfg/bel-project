@@ -3,30 +3,60 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
     <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/w3.css') }}">
+    <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/main.css') }}">
+
+    <link rel="icon" href="{{ url_for(endpoint='static', filename='images/bel-icon.png') }}">
+    <title>Login</title>
 </head>
 
-<body>
+<body {% if error %} onload="document.getElementById('error-display').style.display = 'block'" {% endif %}>
+
+<div class="w3-container">
+
+    <div class="w3-container w3-padding" style="font-size: xx-large; font-style: oblique">
+        <b>LOGIN</b>
+        <img src="{{ url_for(endpoint='static', filename='images/bel.png') }}" align="right">
+    </div>
+
+    <div class="w3-bar" style="background: #00aeef ">
+        <p class="w3-bar-item"></p>
+    </div>
+
+    <br><br>
+
+    <div align="center">
+        <form name="loginForm" method="post" action="/login/submit">
+
+            <b>Username : </b><input type="text" name="username" maxlength="10" {% if username %}
+                                     value={{ username }} {%
+                                     endif %}><br><br>
+            <b>Password : </b><input type="password" name="password"><br><br>
+
+            <input type="submit" value="Login" class="w3-btn w3-round-xxlarge" style="background: #00aeef">
+        </form>
+        <br>
+
+        <form name="registerForm" method="get" action="/register">
+            <input type="submit" value="Register" class="w3-btn w3-round-xxlarge" style="background: #00aeef">
+        </form>
+    </div>
 
     {% if error %}
-    <h3 style="color: red">Error:  {{ error }}</h3>
+    <div id="error-display" class="w3-modal">
+        <div class="w3-modal-content w3-animate-top w3-card-4" style="width: 25%">
+            <header class="w3-container w3-red">
+                    <span onclick="document.getElementById('error-display').style.display='none'"
+                          class="w3-button w3-display-topright">&times;</span>
+                <h2 align="center">Error</h2>
+            </header>
+            <div class="w3-container">
+                <p align="center">{{error}}</p>
+            </div>
+        </div>
+    </div>
     {% endif %}
 
-    <form name="loginForm" method="post" action="/login/submit">
-
-        <b><h1> LOGIN</h1></b>
-
-        <b>Username : </b><input type="text" name="username" maxlength="10" {% if username %} value={{ username }} {%
-                                 endif %}><br><br>
-        <b>Password : </b><input type="password" name="password"><br><br>
-
-        <input type="submit" value="Login">
-    </form>
-    <br>
-    <form name="registerForm" method="get" action="/register">
-        <input type="submit" value="Register">
-    </form>
-
+</div>
 </body>
 </html>
