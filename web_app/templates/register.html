@@ -11,6 +11,23 @@
 </head>
 
 <body {% if error %} onload="document.getElementById('error-display').style.display = 'block'" {% endif %}>
+
+<script type="application/javascript">
+    function phoneValidate() {
+        if (!Number.isInteger(Number(document.getElementById('number').value))) {
+            document.getElementById('error-content').innerHTML = 'Invalid Contact Number'
+            document.getElementById('error-display').style.display = 'Block'
+        }
+    }
+
+    function emailValidate() {
+        if (!document.getElementById('email').value.match('.+@.+\\..+')) {
+            document.getElementById('error-content').innerHTML = 'Invalid E-Mail ID'
+            document.getElementById('error-display').style.display = 'Block'
+        }
+    }
+</script>
+
 <div class="w3-container">
 
     <div class="w3-container w3-padding" style="font-size: xx-large; font-style: oblique">
@@ -19,7 +36,7 @@
     </div>
 
     <div class="w3-bar" style="background: #00aeef ">
-        <p class="w3-bar-item"></p>
+        <button class="w3-bar-item w3-btn" style="visibility: hidden">dummy button for proper height</button>
     </div>
 
     <br><br>
@@ -32,31 +49,32 @@
 
             {% if role == 'engineer' %}
             <b>Name : </b>
-            <input type="text" name="name" {% if name %} value={{name}} {% endif %}><br><br>
+            <input type="text" name="name" {% if name %} value={{name}} {% endif %} required><br><br>
             <b>Contact Number : </b>
-            <input type="number" name="contact" maxlength="10" {% if contact %} value={{contact}} {% endif
-                   %}><br><br>
+            <input type="text" id="number" name="contact" minlength="10" maxlength="10"
+                   {% if contact %} value={{contact}} {% endif %} onfocusout="phoneValidate()" required><br><br>
             <b>Email ID : </b>
-            <input type="text" name="email" {% if email %} value={{email}} {% endif %}><br><br>
+            <input type="text" id="email" name="email" {% if email %} value={{email}} {% endif %}
+                   onfocusout="emailValidate()" required><br><br>
             <b>Region : </b>
-            <input type="text" name="region" {% if region %} value={{region}} {% endif %}><br><br>
+            <input type="text" name="region" {% if region %} value={{region}} {% endif %} required><br><br>
             <b>Address : </b>
-            <input type="text" name="address" {% if address %} value={{address}} {% endif %}><br><br>
+            <input type="text" name="address" {% if address %} value={{address}} {% endif %} required><br><br>
             {% endif %}
 
             {% if role == 'reg_mgr' %}
             <b>Region ID : </b>
-            <input type="text" name="id" maxlength="2" {% if id %} value={{id}} {% endif %}><br><br>
+            <input type="text" name="id" maxlength="2" {% if id %} value={{id}} {% endif %} required><br><br>
             <b>Address : </b>
-            <input type="text" name="address" {% if address %} value={{address}} {% endif %}><br><br>
+            <input type="text" name="address" {% if address %} value={{address}} {% endif %} required><br><br>
             {% endif %}
 
             <b>Username : </b>
             <input type="text" name="username" maxlength="10" {% if username %} value={{username}} {% endif
-                   %}><br><br>
+                   %} required><br><br>
             <b>Password : </b>
-            <input type="password" name="password"><br><br>
-            <b>Confirm Password : </b><input type="password" name="confirm password"><br>
+            <input type="password" name="password" required><br><br>
+            <b>Confirm Password : </b><input type="password" name="confirm password" required><br>
             <input name="role" value={{role}} style="visibility: hidden"><br>
 
             <input type="submit" value="Register" class="w3-btn w3-round-xxlarge" style="background: #00aeef">
@@ -81,20 +99,22 @@
 
     </div>
 
-    {% if error %}
     <div id="error-display" class="w3-modal">
-        <div class="w3-modal-content w3-animate-top w3-card-4">
+        <div class="w3-modal-content w3-animate-top w3-card-4" style="width: 25%">
             <header class="w3-container w3-red w3-center">
                     <span onclick="document.getElementById('error-display').style.display='none'"
                           class="w3-button w3-display-topright">&times;</span>
                 <h2>Error</h2>
             </header>
             <div class="w3-container w3-center">
-                <p>{{error}}</p>
+                <p id="error-content">
+                    {% if error %}
+                    {{error}}
+                    {% endif %}
+                </p>
             </div>
         </div>
     </div>
-    {% endif %}
 
 </div>
 </body>

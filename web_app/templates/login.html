@@ -20,7 +20,7 @@
     </div>
 
     <div class="w3-bar" style="background: #00aeef ">
-        <p class="w3-bar-item"></p>
+        <button class="w3-bar-item w3-btn" style="visibility: hidden">dummy button for proper height</button>
     </div>
 
     <br><br>
@@ -29,16 +29,17 @@
         <form name="loginForm" method="post" action="/login/submit">
 
             <b>Username : </b><input type="text" name="username" maxlength="10" {% if username %}
-                                     value={{ username }} {%
-                                     endif %}><br><br>
-            <b>Password : </b><input type="password" name="password"><br><br>
+                                     value={{ username }} {%endif %} required><br><br>
+            <b>Password : </b><input type="password" name="password" required><br><br>
 
-            <input type="submit" value="Login" class="w3-btn w3-round-xxlarge" style="background: #00aeef">
+            <input type="submit" value="Login" class="w3-btn w3-round-xxlarge"
+                   style="background: #00aeef; width: 130px">
         </form>
         <br>
 
         <form name="registerForm" method="get" action="/register">
-            <input type="submit" value="Register" class="w3-btn w3-round-xxlarge" style="background: #00aeef">
+            <input type="submit" value="Register" class="w3-btn w3-round-xxlarge"
+                   style="background: #00aeef; width: 130px">
         </form>
     </div>
 
