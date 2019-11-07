@@ -138,12 +138,11 @@ def homepage_date():
 
         # get all machines that are allocated to engineer which are due for pm
         dbcursor.execute(f"""
-        select m.Location, DATE_ADD(pm.Date, interval 3 month )
-        from pm join machine m on pm.Machine = m.SlNo join engineer e on pm.Engineer = e.ID
-        where e.Username = '{request.form['username']}' and
-            year(DATE_ADD(pm.Date, interval 3 month )) = year(now()) and
-            month(DATE_ADD(pm.Date, interval 3 month )) = month(now()) and
-            (DATE_ADD(pm.Date, interval 3 month ) <= m.WarrantyExp or DATE_ADD(pm.Date, interval 3 month ) < m.AMCExp);
+        select m.Location, next_pm(m.SlNo)
+        from machine m join engineer e on m.AllocatedTo = e.ID
+        where e.username = '{request.form['username']}' and
+            (next_pm(m.SlNo) <= m.WarrantyExp or next_pm(m.SlNo) between m.AMCStart and m.AMCExp) and 
+            year(next_pm(m.SlNo)) = year(now()) and month(next_pm(m.SlNo)) = month(now());
         """)
         res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
         for i in res:
@@ -183,13 +182,11 @@ def homepage_date():
 
         # get all machines that are allocated to all engineers in the region which are due for pm
         dbcursor.execute(f"""
-        select m.Location, e.Name, DATE_ADD(pm.Date, interval 3 month )
-        from pm join machine m on pm.Machine = m.SlNo join 
-            (engineer e join reg_center rc on e.Region = rc.ID) on pm.Engineer = e.ID
+        select m.Location, e.Name, next_pm(m.SlNo)
+        from machine m join (engineer e join reg_center rc on e.Region = rc.ID) on m.AllocatedTo = e.ID
         where rc.username = '{request.form['username']}' and
-            year(DATE_ADD(pm.Date, interval 3 month )) = year(now()) and
-            month(DATE_ADD(pm.Date, interval 3 month )) = month(now()) and
-            (DATE_ADD(pm.Date, interval 3 month ) <= m.WarrantyExp or DATE_ADD(pm.Date, interval 3 month ) < m.AMCExp);
+            (next_pm(m.SlNo) <= m.WarrantyExp or next_pm(m.SlNo) between m.AMCStart and m.AMCExp) and 
+            year(next_pm(m.SlNo)) = year(now()) and month(next_pm(m.SlNo)) = month(now());
         """)
         res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
         for i in res:
