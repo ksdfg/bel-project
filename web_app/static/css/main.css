@@ -1,3 +1,8 @@
+.peacock-blue, .hover-peacock-blue:hover {
+    color: #000 !important;
+    background-color: #00aeef !important
+}
+
 table {
     border-collapse: collapse;
     width: 50%;

@@ -17,13 +17,13 @@
         <img src="{{ url_for(endpoint='static', filename='images/bel.png') }}" align="right">
     </div>
 
-    <div class="w3-bar" style="background: #00aeef ">
+    <div class="w3-bar peacock-blue">
         <button class="w3-bar-item w3-button">do not click yet</button>
     </div>
 
     <br><br>
 
-    <div id="tables" align="center">
+    <div class="w3-responsive" id="tables" align="center">
         {% if role == 'bel_mgr' or role == 'call_center' %}
         <table>
             <tbody>
@@ -49,103 +49,111 @@
         {% endif %}
 
         {% if complaints %}
-        <table>
-            <caption>
-                <h3>List of {% if role != 'engineer' %}high priority{% endif %} complaints :</h3>
-            </caption>
-            <thead>
-            <tr>
-                <th>Machine</th>
-                <th>Customer</th>
-                <th>Location</th>
-                {% if role != 'engineer' %}
-                <th>Engineer</th>
-                {% endif %}
-                <th>Open Since</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for comp in complaints %}
-            <tr>
-                {% for data in comp %}
-                <td align="center">{{data}}</td>
+        <div class="w3-responsive">
+            <table>
+                <caption>
+                    <h3>List of {% if role != 'engineer' %}high priority{% endif %} complaints :</h3>
+                </caption>
+                <thead>
+                <tr>
+                    <th>Machine</th>
+                    <th>Customer</th>
+                    <th>Location</th>
+                    {% if role != 'engineer' %}
+                    <th>Engineer</th>
+                    {% endif %}
+                    <th>Open Since</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for comp in complaints %}
+                <tr>
+                    {% for data in comp %}
+                    <td align="center">{{data}}</td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
         <br><br>
         {% endif %}
 
         {% if pm %}
-        <table>
-            <caption><h3>Upcoming Preventive Maintenance</h3></caption>
-            <thead>
-            <tr>
-                <th>Machine Location</th>
-                {% if role != 'engineer' %}
-                <th>Engineer</th>
-                {% endif %}
-                <th>Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for machine in pm %}
-            <tr>
-                {% for data in machine %}
-                <td>{{data}}</td>
+        <div class="w3-responsive">
+            <table>
+                <caption><h3>Upcoming Preventive Maintenance</h3></caption>
+                <thead>
+                <tr>
+                    <th>Machine Location</th>
+                    {% if role != 'engineer' %}
+                    <th>Engineer</th>
+                    {% endif %}
+                    <th>Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for machine in pm %}
+                <tr>
+                    {% for data in machine %}
+                    <td>{{data}}</td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
         <br><br>
         {% endif %}
 
         {% if role == 'engineer' or role == 'reg_mgr' %}
 
-        <table>
-            <caption><h3>List of Materials at hand</h3></caption>
-            <thead>
-            <tr>
-                <th>Material Description</th>
-                <th>Quantity</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if materials %}
-            {% for material in materials %}
-            <tr>
-                {% for data in material %}
-                <td>{{data}}</td>
+        <div class="w3-responsive">
+            <table>
+                <caption><h3>List of Materials at hand</h3></caption>
+                <thead>
+                <tr>
+                    <th>Material Description</th>
+                    <th>Quantity</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if materials %}
+                {% for material in materials %}
+                <tr>
+                    {% for data in material %}
+                    <td>{{data}}</td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-            {% endfor %}
-            {% endif %}
-            </tbody>
-        </table>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
         <br><br>
 
-        <table>
-            <caption><h3>List of Scrap Materials at hand</h3></caption>
-            <thead>
-            <tr>
-                <th>Material Description</th>
-                <th>Quantity</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if scrap %}
-            {% for material in scrap %}
-            <tr>
-                {% for data in material %}
-                <td>{{data}}</td>
+        <div class="w3-responsive">
+            <table>
+                <caption><h3>List of Scrap Materials at hand</h3></caption>
+                <thead>
+                <tr>
+                    <th>Material Description</th>
+                    <th>Quantity</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% if scrap %}
+                {% for material in scrap %}
+                <tr>
+                    {% for data in material %}
+                    <td>{{data}}</td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-            {% endfor %}
-            {% endif %}
-            </tbody>
-        </table>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
         <br><br>
 
         {% endif %}
