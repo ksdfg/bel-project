@@ -29,7 +29,7 @@
         <form name="loginForm" method="post" action="/login/submit">
 
             <b>Username : </b><input type="text" name="username" maxlength="10" {% if username %}
-                                     value={{ username }} {%endif %} required><br><br>
+                                     value={{ username }} {%endif %} required autofocus><br><br>
             <b>Password : </b><input type="password" name="password" required><br><br>
 
             <input type="submit" value="Login" class="w3-btn w3-round-xxlarge"
