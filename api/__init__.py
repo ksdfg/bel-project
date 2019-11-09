@@ -142,6 +142,7 @@ def homepage_date():
         from machine m join engineer e on m.AllocatedTo = e.ID
         where e.username = '{request.form['username']}' and
             (next_pm(m.SlNo) <= m.WarrantyExp or next_pm(m.SlNo) between m.AMCStart and m.AMCExp) and 
+            next_pm(m.SlNo) >= date(now()) and
             year(next_pm(m.SlNo)) = year(now()) and month(next_pm(m.SlNo)) = month(now());
         """)
         res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
@@ -186,6 +187,7 @@ def homepage_date():
         from machine m join (engineer e join reg_center rc on e.Region = rc.ID) on m.AllocatedTo = e.ID
         where rc.username = '{request.form['username']}' and
             (next_pm(m.SlNo) <= m.WarrantyExp or next_pm(m.SlNo) between m.AMCStart and m.AMCExp) and 
+            next_pm(m.SlNo) >= date(now()) and
             year(next_pm(m.SlNo)) = year(now()) and month(next_pm(m.SlNo)) = month(now());
         """)
         res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
@@ -212,3 +214,10 @@ def homepage_date():
         data['scrap'] = res
 
     return dumps(data)
+
+
+# get list of all customers
+@app.route('/api/retrieve/customers', methods=['GET'])
+def get_customers():
+    dbcursor.execute('select ID, Name from customer')
+    return dumps(dbcursor.fetchall())

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/w3.css') }}">
+    <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/main.css') }}">
+
+    <link rel="icon" href="{{ url_for(endpoint='static', filename='images/bel-icon.png') }}">
+    <title>CRM</title>
+</head>
+<body>
+<div class="w3-container">
+
+    <div class="w3-container w3-padding" style="font-size: xx-large; font-style: oblique">
+        <b>Add Machine</b>
+        <img src="{{ url_for(endpoint='static', filename='images/bel.png') }}" align="right">
+    </div>
+
+</div>
+
+<div class="w3-bar peacock-blue">
+    <button class="w3-bar-item w3-button" onclick="location.href = '/';" style="width: 10%">Home</button>
+    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/login';" style="width: 10%">Login</button>
+    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/register';" style="width: 10%">Register
+    </button>
+</div>
+
+<br><br>
+
+<div class="w3-container">
+
+    <div class="w3-center">
+        <form name="addMachine" method="post" action="/api/add/machine">
+            <b>Serial Number : </b>
+            <input type="number" name="slno" required>
+            <br><br>
+            <b>Model : </b>
+            <input type="text" name="model" required>
+            <br><br>
+            <b>Customer : </b>
+            <select name="customer" required>
+                {% for customer in customers %}
+                <option value="{{customer[0]}}">{{customer[1]}}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <b>Location : </b>
+            <input type="text" name="location" required>
+            <br><br>
+            <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
+        </form>
+    </div>
+
+</div>
+</body>
+</html>

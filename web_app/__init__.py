@@ -61,3 +61,9 @@ def register_submit():
     if res == 'done':
         return redirect(url_for('login_page'))
     return render_template('register.html', **request.form, error=res)  # in case of errors
+
+
+# render add machine page
+@app.route('/add-machine')
+def add_machine_page():
+    return render_template('add_machine.html', customers=loads(get(url + 'api/retrieve/customers').text))

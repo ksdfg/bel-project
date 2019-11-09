@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/w3.css') }}">
     <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/main.css') }}">
 
@@ -17,11 +18,23 @@
         <img src="{{ url_for(endpoint='static', filename='images/bel.png') }}" align="right">
     </div>
 
-    <div class="w3-bar peacock-blue">
-        <button class="w3-bar-item w3-button">do not click yet</button>
-    </div>
+</div>
 
-    <br><br>
+<div class="w3-bar peacock-blue">
+    <button class="w3-bar-item w3-button" onclick="location.href = '/';" style="width: 10%">Home</button>
+    {% if role == 'call_center' %}
+    <button class="w3-bar-item w3-button" onclick="location.href = '/add-machine';" style="width: 10%">Add Machine
+    </button>
+    {% endif %}
+
+    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/login';" style="width: 10%">Login</button>
+    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/register';" style="width: 10%">Register
+    </button>
+</div>
+
+<br><br>
+
+<div class="w3-container">
 
     <div class="w3-responsive" id="tables" align="center">
         {% if role == 'bel_mgr' or role == 'call_center' %}
@@ -69,7 +82,7 @@
                 {% for comp in complaints %}
                 <tr>
                     {% for data in comp %}
-                    <td align="center">{{data}}</td>
+                    <td>{{data}}</td>
                     {% endfor %}
                 </tr>
                 {% endfor %}

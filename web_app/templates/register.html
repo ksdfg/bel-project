@@ -35,31 +35,55 @@
         <img src="{{ url_for(endpoint='static', filename='images/bel.png') }}" align="right">
     </div>
 
-    <div class="w3-bar" style="background: #00aeef ">
-        <button class="w3-bar-item w3-btn" style="visibility: hidden">dummy button for proper height</button>
+    <div class="w3-bar peacock-blue">
+        <button class="w3-bar-item w3-button" onclick="location.href = '/';" style="width: 10%">Home</button>
+        <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/login';" style="width: 10%">Login
+        </button>
+        <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/register';" style="width: 10%">
+            Register
+        </button>
     </div>
 
     <br><br>
 
-    <div class="w3-center">
+    {% if role %}
 
-        {% if role %}
+    <form name="registerUser" method="post" action="/register/submit">
 
-        <form name="registerUser" method="post" action="/register/submit">
+        <div class="w3-container" style="padding-left: 20%; padding-right: 20%">
 
             {% if role == 'engineer' %}
-            <b>Name : </b>
-            <input type="text" name="name" {% if name %} value={{name}} {% endif %} required><br><br>
-            <b>Contact Number : </b>
+            <label for="name" style="padding-left: 3%">
+                <b>Name : </b><br>
+            </label>
+            <input type="text" id="name" name="name" {% if name %} value={{name}} {% endif %} style="width: 100%"
+                   required><br><br>
+            <label for="number" style="padding-left: 3%">
+                <b>Contact Number : </b><br>
+            </label>
             <input type="text" id="number" name="contact" minlength="10" maxlength="10"
-                   {% if contact %} value={{contact}} {% endif %} onfocusout="phoneValidate()" required><br><br>
-            <b>Email ID : </b>
-            <input type="text" id="email" name="email" {% if email %} value={{email}} {% endif %}
-                   onfocusout="emailValidate()" required><br><br>
-            <b>Region : </b>
-            <input type="text" name="region" {% if region %} value={{region}} {% endif %} required><br><br>
-            <b>Address : </b>
-            <input type="text" name="address" {% if address %} value={{address}} {% endif %} required><br><br>
+                   {% if contact %} value={{contact}} {% endif %} style="width: 100%" onfocusout="phoneValidate()"
+                   required><br><br>
+            <label for="email" style="padding-left: 3%">
+                <b>Email ID : </b><br>
+            </label>
+            <input type="text" id="email" name="email" {% if email %} style="width: 100%" value={{email}} {% endif %}
+                   onfocusout="emailValidate()" style="width: 100%" required><br><br>
+            <label for="region" style="padding-left: 3%">
+                <b>Region : </b><br>
+            </label>
+            <select id="region" name="region" {% if region %} value={{region}} {% endif %} style="width: 100%" required>
+                <option value="nr">North Region</option>
+                <option value="er">East Region</option>
+                <option value="wr">West Region</option>
+                <option value="sr">South Region</option>
+            </select><br><br>
+            <label for="address" style="padding-left: 3%">
+                <b>Address : </b><br>
+            </label>
+            <input type="text" id="address" name="address" {% if address %} value={{address}} {% endif %}
+                   style="width: 100%"
+                   required><br><br>
             {% endif %}
 
             {% if role == 'reg_mgr' %}
@@ -71,32 +95,34 @@
 
             <b>Username : </b>
             <input type="text" name="username" maxlength="10" {% if username %} value={{username}} {% endif
-                   %} required><br><br>
+                   %} style="width: 100%" required><br><br>
             <b>Password : </b>
-            <input type="password" name="password" required><br><br>
-            <b>Confirm Password : </b><input type="password" name="confirm password" required><br>
+            <input type="password" name="password" style="width: 100%" required><br><br>
+            <b>Confirm Password : </b><input type="password" name="confirm password" style="width: 100%" required><br>
             <input name="role" value={{role}} style="visibility: hidden"><br>
 
+        </div>
+
+        <div class="w3-center">
             <input type="submit" value="Register" class="w3-btn w3-round-xxlarge peacock-blue">
-        </form>
+        </div>
+    </form>
 
-        {% else %}
+    {% else %}
 
-        <form name="registerForm" method="get" action="/register">
-            <b>Select role of user : </b>
-            <select name="role">
-                <option value="engineer">Engineer</option>
-                <option value="call_center">Call Center Operative</option>
-                <option value="bel_mgr">BEL Manager</option>
-                <option value="reg_mgr">Regional Center Manager</option>
-            </select>
-            <br><br>
-            <input type="submit" value="Get Registration Form" class="w3-btn w3-round-xxlarge peacock-blue">
-        </form>
+    <form name="registerForm" method="get" action="/register">
+        <b>Select role of user : </b>
+        <select name="role">
+            <option value="engineer">Engineer</option>
+            <option value="call_center">Call Center Operative</option>
+            <option value="bel_mgr">BEL Manager</option>
+            <option value="reg_mgr">Regional Center Manager</option>
+        </select>
+        <br><br>
+        <input type="submit" value="Get Registration Form" class="w3-btn w3-round-xxlarge peacock-blue">
+    </form>
 
-        {% endif %}
-
-    </div>
+    {% endif %}
 
     <div id="error-display" class="w3-modal">
         <div class="w3-modal-content w3-animate-top w3-card-4" style="width: 25%">
