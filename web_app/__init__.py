@@ -30,8 +30,8 @@ def homepage():
 # render login page
 @app.route('/login')
 def login_page():
-    if 'username' in session:
-        return render_template('login.html', username=session['username'])  # just cuz i saw some other sites do this...
+    if 'username' in session:  # just cuz i saw some other sites do this...
+        return render_template('login.html', username=session['username'])
     return render_template('login.html')
 
 
@@ -48,10 +48,21 @@ def login_submit():
     return render_template('login.html', username=request.form['username'], error=response['result'])
 
 
+# logout a user
+@app.route('/logout')
+def logout():
+    last_user = ""
+    if 'username' in session.keys():
+        last_user = session['username']
+        del session['username']
+        del session['role']
+    return render_template('login.html', username=last_user)
+
+
 # render register page
 @app.route('/register')
 def register_page():
-    return render_template('register.html', role=request.args.get('role'))
+    return render_template('register.html', role=request.args.get('role'), session=session)
 
 
 # register new user upon clicking register button in register.html (wow, so much register)
@@ -67,3 +78,12 @@ def register_submit():
 @app.route('/add-machine')
 def add_machine_page():
     return render_template('add_machine.html', customers=loads(get(url + 'api/retrieve/customers').text))
+
+
+@app.route('/test')
+def test():
+    users = [{'id': '1', 'name': 'generic name', 'email': 'generic@email.ext', 'phone': '9011152660', 'year': '3rd',
+              'extra': 'works'},
+             {'id': '1', 'name': 'generic name', 'email': 'generic@email.ext', 'phone': '9011152660', 'year': '3rd',
+              'extra': 'fine'}]
+    return render_template('users.html', users=users, extra_columns={'Extra Column': 'extra'})
