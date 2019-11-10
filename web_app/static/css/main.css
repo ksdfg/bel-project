@@ -25,3 +25,7 @@ tr:nth-child(even) {
 select {
     text-align: center;
 }
+
+select:after {
+
+}

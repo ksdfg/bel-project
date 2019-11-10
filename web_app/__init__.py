@@ -43,6 +43,7 @@ def login_submit():
         # save the username and role in session, then redirect to homepage
         session['username'] = request.form['username']
         session['role'] = response['role']
+        print(request.form['username'] + " logged in!")
         return redirect(url_for('homepage'))
     # in case there was an error while logging in
     return render_template('login.html', username=request.form['username'], error=response['result'])
@@ -68,7 +69,7 @@ def register_page():
 # register new user upon clicking register button in register.html (wow, so much register)
 @app.route('/register/submit', methods=["POST"])
 def register_submit():
-    res = post(url + "api/register", data=dict(request.form)).text
+    res = post(url + "api/add/user", data=dict(request.form)).text
     if res == 'done':
         return redirect(url_for('login_page'))
     return render_template('register.html', **request.form, error=res)  # in case of errors
@@ -78,6 +79,19 @@ def register_submit():
 @app.route('/add-machine')
 def add_machine_page():
     return render_template('add_machine.html', customers=loads(get(url + 'api/retrieve/customers').text))
+
+
+# add machine to db
+@app.route('/add-machine/submit', methods=['POST'])
+def add_machine_submit():
+    response = post(url + 'api/add/machine', data=dict(request.form)).text
+    if response == 'ok':
+        return render_template('add_machine.html', customers=loads(get(url + 'api/retrieve/customers').text),
+                               success="Machine Added")
+    else:
+        print(dict(request.form))
+        return render_template('add_machine.html', customers=loads(get(url + 'api/retrieve/customers').text),
+                               error=response, **request.form)
 
 
 @app.route('/test')

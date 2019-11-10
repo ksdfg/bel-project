@@ -8,7 +8,8 @@
     <link rel="icon" href="{{ url_for(endpoint='static', filename='images/bel-icon.png') }}">
     <title>CRM</title>
 </head>
-<body>
+
+<body {% if success or error %} onload="document.getElementById('message-display').style.display = 'block'" {% endif %}>
 <div class="w3-container w3-padding">
     <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}"></span>
     <span class="w3-right w3-margin-top w3-margin-right" style="font-size: xx-large; font-style: oblique">
@@ -27,25 +28,25 @@
 
 <div class="w3-container">
 
-    <form name="addMachine" method="post" action="/api/add/machine">
+    <form name="addMachine" method="post" action="/add-machine/submit">
         <div style="padding-left: 30%; padding-right: 30%">
             <label for="slno" style="padding-left: 5%">
                 <b>Serial Number : </b>
             </label>
-            <input class="w3-input w3-round-xxlarge w3-border hover-peacock-blue" type="number" id="slno" name="slno"
-                   required>
+            <input class="w3-input w3-round-xxlarge w3-border hover-peacock-blue" type="number" id="slno" name="SlNo"
+                   {% if SlNo %} value={{SlNo}} {% endif %}} style="padding-left: 5%; padding-right: 5%" required>
             <br><br>
             <label for="model" style="padding-left: 5%">
                 <b>Model : </b>
             </label>
-            <input class="w3-input w3-round-xxlarge w3-border hover-peacock-blue" type="text" id="model" name="model"
-                   required>
+            <input class="w3-input w3-round-xxlarge w3-border hover-peacock-blue" type="text" id="model" name="Model"
+                   {% if Model %} value={{Model}} {% endif %}} style="padding-left: 5%; padding-right: 5%" required>
             <br><br>
             <label for="customer" style="padding-left: 5%">
                 <b>Customer : </b>
             </label>
-            <select class="w3-select w3-round-xxlarge w3-border hover-peacock-blue" id="customer" name="customer"
-                    required>
+            <select class="w3-select w3-round-xxlarge w3-border hover-peacock-blue" id="customer" name="CustID"
+                    {% if Customer %} value={{Customer}} {% endif %}} required>
                 {% for customer in customers %}
                 <option value="{{customer[0]}}">{{customer[1]}}</option>
                 {% endfor %}
@@ -54,15 +55,46 @@
             <label for="location" style="padding-left: 5%">
                 <b>Location : </b>
             </label>
-            <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" id="location" name="location" {% if
-                      address %} value={{address}} {% endif %} rows="5" style="width: 100%" required></textarea>
+            <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" id="location" name="Location"
+                      rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%" {% if Location %}
+                      onload="document.getElementById('location').innerHTML = '{{Location}}'" {% endif %} required>
+            </textarea>
             <br><br>
         </div>
 
         <div class="w3-center">
             <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
         </div>
+
+        <input style="visibility: hidden" name="Status" value="Installation Pending">
     </form>
+
+    <div id="message-display" class="w3-modal">
+        <div class="w3-modal-content w3-animate-top w3-card-4" style="width: 25%">
+            {% if error %}
+            <header class="w3-container w3-red w3-center">
+                    <span onclick="document.getElementById('message-display').style.display='none'"
+                          class="w3-button w3-display-topright">&times;</span>
+                <h2>Error</h2>
+            </header>
+            {% elif success %}
+            <header class="w3-container w3-green w3-center">
+                    <span onclick="document.getElementById('message-display').style.display='none'"
+                          class="w3-button w3-display-topright">&times;</span>
+                <h2>Success</h2>
+            </header>
+            {% endif %}
+            <div class="w3-container w3-center">
+                <p id="message-content">
+                    {% if error %}
+                    {{error}}
+                    {% elif success %}
+                    {{success}}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
 
 </div>
 </body>

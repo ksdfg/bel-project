@@ -1,4 +1,5 @@
 from json import dumps
+from re import compile, match
 
 from flask import Flask, request
 from mysql.connector import connect, IntegrityError
@@ -35,7 +36,7 @@ def validate_login():
 
 
 # post request to register a new user
-@app.route('/api/register', methods=["POST"])
+@app.route('/api/add/user', methods=["POST"])
 def register():
     # if password is not same in both fields
     if request.form['password'] != request.form['confirm password']:
@@ -221,3 +222,22 @@ def homepage_date():
 def get_customers():
     dbcursor.execute('select ID, Name from customer')
     return dumps(dbcursor.fetchall())
+
+
+# add a machine in the system db
+@app.route('/api/add/machine', methods=['POST'])
+def add_machine():
+    try:
+        pattern = compile(r'\D')
+        dbcursor.execute(f"""
+        insert into machine({','.join(request.form.keys())}) values 
+        ({','.join(
+            map(lambda x: '"{}"'.format(x) if match(pattern, x) else x, request.form.values())
+        )})
+        """)
+        db.commit()
+        return 'ok'
+    except IntegrityError:
+        return 'Machine Already Exists'
+    except Exception as e:
+        return str(e)

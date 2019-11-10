@@ -8,7 +8,8 @@
 
     <script type="application/javascript">
         function phoneValidate() {
-            if (!Number.isInteger(Number(document.getElementById('number').value))) {
+            if (!Number.isInteger(Number(document.getElementById('number').value)) ||
+                document.getElementById('number').value === '') {
                 document.getElementById('error-content').innerHTML = 'Invalid Contact Number'
                 document.getElementById('error-display').style.display = 'Block'
             }
@@ -60,20 +61,23 @@
                 <b>Name : </b>
             </label>
             <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" type="text" id="name" name="name" {%
-                   if name %} value={{name}} {% endif %} style="width: 100%" required><br><br>
+                   if name %} value={{name}} {% endif %} style="width: 100%; padding-left: 5%; padding-right: 5%"
+                   required>
+            <br><br>
             <label for="number" style="padding-left: 5%">
                 <b>Contact Number : </b>
             </label>
             <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" type="text" id="number" name="contact"
-                   minlength="10" maxlength="10" {% if contact %} value={{contact}} {% endif %} style="width: 100%"
-                   onfocusout="phoneValidate()" required><br><br>
+                   minlength="10" maxlength="10" {% if contact %} value={{contact}} {% endif %}
+                   style="width: 100%; padding-left: 5%; padding-right: 5%" onfocusout="phoneValidate()" required>
+            <br><br>
             <label for="email" style="padding-left: 5%">
                 <b>Email ID : </b>
             </label>
             <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" type="text" id="email" name="email" {%
-                   if email %}
-                   style="width: 100%" value={{email}} {% endif %} onfocusout="emailValidate()" style="width: 100%"
-                   required><br><br>
+                   if email %} value={{email}} {% endif %} onfocusout="emailValidate()"
+                   style="width: 100%; padding-left: 5%; padding-right: 5%" required>
+            <br><br>
             <label for="region" style="padding-left: 5%">
                 <b>Region : </b>
             </label>
@@ -88,7 +92,9 @@
                 <b>Address : </b>
             </label>
             <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" id="address" name="address" {% if
-                      address %} value={{address}} {% endif %} rows="5" style="width: 100%" required></textarea><br><br>
+                      address %} value={{address}} {% endif %} rows="5"
+                      style="width: 100%; padding-left: 5%; padding-right: 5%" required></textarea>
+            <br><br>
             {% endif %}
 
             {% if role == 'reg_mgr' %}
@@ -96,12 +102,16 @@
                 <b>Region ID : </b>
             </label>
             <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" type="text" id="id" name="id"
-                   maxlength="2" {% if id %} value={{id}} {% endif %} style="width: 100%" required><br><br>
+                   maxlength="2" {% if id %} value={{id}} {% endif %}
+                   style="width: 100%; padding-left: 5%; padding-right: 5%" required>
+            <br><br>
             <label for="addr" style="padding-left: 5%">
                 <b>Address : </b>
             </label>
             <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" id="addr" name="address" {% if
-                      address %} value={{address}} {% endif %} rows="5" style="width: 100%" required></textarea><br><br>
+                      address %} value={{address}} {% endif %} rows="5"
+                      style="width: 100%; padding-left: 5%; padding-right: 5%" required></textarea>
+            <br><br>
             {% endif %}
 
             <label for="username" style="padding-left: 5%">
@@ -114,13 +124,14 @@
                 <b>Password : </b>
             </label>
             <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" type="password" id="password"
-                   name="password"
-                   style="width: 100%" required><br><br>
+                   name="password" style="width: 100%; padding-left: 5%; padding-right: 5%" required>
+            <br><br>
             <label for="conf-password" style="padding-left: 5%">
                 <b>Confirm Password : </b>
             </label>
             <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" type="password" id="conf-password"
-                   name="confirm password" style="width: 100%" required><br>
+                   name="confirm password" style="width: 100%; padding-left: 5%; padding-right: 5%" required>
+            <br>
 
         </div>
 
