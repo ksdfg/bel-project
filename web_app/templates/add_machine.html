@@ -9,19 +9,17 @@
     <title>CRM</title>
 </head>
 <body>
-<div class="w3-container">
-
-    <div class="w3-container w3-padding" style="font-size: xx-large; font-style: oblique">
-        <b>Add Machine</b>
-        <img src="{{ url_for(endpoint='static', filename='images/bel.png') }}" align="right">
-    </div>
-
+<div class="w3-container w3-padding">
+    <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}"></span>
+    <span class="w3-right w3-margin-top w3-margin-right" style="font-size: xx-large; font-style: oblique">
+        <b>Add Machine</b></span>
 </div>
 
 <div class="w3-bar peacock-blue">
     <button class="w3-bar-item w3-button" onclick="location.href = '/';" style="width: 10%">Home</button>
-    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/login';" style="width: 10%">Login</button>
     <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/register';" style="width: 10%">Register
+    </button>
+    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/logout';" style="width: 10%">Logout
     </button>
 </div>
 
@@ -29,27 +27,42 @@
 
 <div class="w3-container">
 
-    <div class="w3-center">
-        <form name="addMachine" method="post" action="/api/add/machine">
-            <b>Serial Number : </b>
-            <input type="number" name="slno" required>
+    <form name="addMachine" method="post" action="/api/add/machine">
+        <div style="padding-left: 30%; padding-right: 30%">
+            <label for="slno" style="padding-left: 5%">
+                <b>Serial Number : </b>
+            </label>
+            <input class="w3-input w3-round-xxlarge w3-border hover-peacock-blue" type="number" id="slno" name="slno"
+                   required>
             <br><br>
-            <b>Model : </b>
-            <input type="text" name="model" required>
+            <label for="model" style="padding-left: 5%">
+                <b>Model : </b>
+            </label>
+            <input class="w3-input w3-round-xxlarge w3-border hover-peacock-blue" type="text" id="model" name="model"
+                   required>
             <br><br>
-            <b>Customer : </b>
-            <select name="customer" required>
+            <label for="customer" style="padding-left: 5%">
+                <b>Customer : </b>
+            </label>
+            <select class="w3-select w3-round-xxlarge w3-border hover-peacock-blue" id="customer" name="customer"
+                    required>
                 {% for customer in customers %}
                 <option value="{{customer[0]}}">{{customer[1]}}</option>
                 {% endfor %}
             </select>
             <br><br>
-            <b>Location : </b>
-            <input type="text" name="location" required>
+            <label for="location" style="padding-left: 5%">
+                <b>Location : </b>
+            </label>
+            <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" id="location" name="location" {% if
+                      address %} value={{address}} {% endif %} rows="5" style="width: 100%" required></textarea>
             <br><br>
+        </div>
+
+        <div class="w3-center">
             <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
-        </form>
-    </div>
+        </div>
+    </form>
 
 </div>
 </body>
