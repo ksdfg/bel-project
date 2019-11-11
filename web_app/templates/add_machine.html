@@ -12,15 +12,17 @@
 <body {% if success or error %} onload="document.getElementById('message-display').style.display = 'block'" {% endif %}>
 <div class="w3-container w3-padding">
     <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}"></span>
-    <span class="w3-right w3-margin-top w3-margin-right" style="font-size: xx-large; font-style: oblique">
+    <span class="w3-display-topmiddle" style="margin-top: 4%; font-size: xx-large; font-style: oblique">
         <b>Add Machine</b></span>
 </div>
 
 <div class="w3-bar peacock-blue">
-    <button class="w3-bar-item w3-button" onclick="location.href = '/';" style="width: 10%">Home</button>
-    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/register';" style="width: 10%">Register
+    <button class="w3-bar-item w3-button" onclick="location.href = '/';" style="width: 10%"><b>Home</b></button>
+
+    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/register';" style="width: 10%">
+        <b>Register</b>
     </button>
-    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/logout';" style="width: 10%">Logout
+    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/logout';" style="width: 10%"><b>Logout</b>
     </button>
 </div>
 
@@ -33,20 +35,22 @@
             <label for="slno" style="padding-left: 5%">
                 <b>Serial Number : </b>
             </label>
-            <input class="w3-input w3-round-xxlarge w3-border hover-peacock-blue" type="number" id="slno" name="SlNo"
-                   {% if SlNo %} value={{SlNo}} {% endif %}} style="padding-left: 5%; padding-right: 5%" required>
+            <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="number"
+                   id="slno" name="SlNo" {% if SlNo %} value={{SlNo}} {% endif %}}
+                   style="padding-left: 5%; padding-right: 5%" required>
             <br><br>
             <label for="model" style="padding-left: 5%">
                 <b>Model : </b>
             </label>
-            <input class="w3-input w3-round-xxlarge w3-border hover-peacock-blue" type="text" id="model" name="Model"
-                   {% if Model %} value={{Model}} {% endif %}} style="padding-left: 5%; padding-right: 5%" required>
+            <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
+                   id="model" name="Model" {% if Model %} value={{Model}} {% endif %}}
+                   style="padding-left: 5%; padding-right: 5%" required>
             <br><br>
             <label for="customer" style="padding-left: 5%">
                 <b>Customer : </b>
             </label>
-            <select class="w3-select w3-round-xxlarge w3-border hover-peacock-blue" id="customer" name="CustID"
-                    {% if Customer %} value={{Customer}} {% endif %}} required>
+            <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" id="customer"
+                    name="CustID" {% if Customer %} value={{Customer}} {% endif %}} required>
                 {% for customer in customers %}
                 <option value="{{customer[0]}}">{{customer[1]}}</option>
                 {% endfor %}
@@ -55,10 +59,10 @@
             <label for="location" style="padding-left: 5%">
                 <b>Location : </b>
             </label>
-            <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" id="location" name="Location"
-                      rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%" {% if Location %}
-                      onload="document.getElementById('location').innerHTML = '{{Location}}'" {% endif %} required>
-            </textarea>
+            <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" id="location"
+                      name="Location" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"
+                      {% if Location %} onload="document.getElementById('location').innerHTML = '{{Location}}'"
+                      {% endif %} required></textarea>
             <br><br>
         </div>
 

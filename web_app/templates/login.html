@@ -13,27 +13,31 @@
 <body {% if error %} onload="document.getElementById('error-display').style.display = 'block'" {% endif %}>
 <div class="w3-container w3-padding">
     <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}"></span>
-    <span class="w3-right w3-margin-top w3-margin-right" style="font-size: xx-large; font-style: oblique">
+    <span class="w3-display-topmiddle" style="margin-top: 4%; font-size: xx-large; font-style: oblique">
         <b>Login</b></span>
 </div>
 
 <div class="w3-bar peacock-blue">
-    <button class="w3-bar-item w3-button" onclick="location.href = '/';" style="width: 10%">Home</button>
-    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/register';" style="width: 10%">Register
+    <button class="w3-bar-item w3-button" onclick="location.href = '/';" style="width: 10%"><b>Home</b></button>
+
+    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/register';" style="width: 10%">
+        <b>Register</b>
     </button>
-    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/login';" style="width: 10%">Login</button>
+    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/logout';" style="width: 10%"><b>Logout</b>
+    </button>
 </div>
 
 <br><br>
 
 <div class="w3-container">
 
-    <div align="center">
+    <div class="w3-display-middle w3-center w3-large">
         <form name="loginForm" method="post" action="/login/submit">
-
-            <b>Username : </b><input type="text" name="username" maxlength="10" {% if username %}
-                                     value={{ username }} {%endif %} required autofocus><br><br>
-            <b>Password : </b><input type="password" name="password" required><br><br>
+            <input type="text" class="w3-input w3-border border-peacock-blue w3-round-xxlarge" name="username"
+                   placeholder="Username" maxlength="10" {% if username %} value={{username}} {%endif %}
+                   style="text-align: center;" required autofocus><br><br>
+            <input type="password" class="w3-input w3-border border-peacock-blue w3-round-xxlarge" name="password"
+                   placeholder="Password" style="text-align: center;" required><br><br>
 
             <input type="submit" value="Login" class="w3-btn w3-round-xxlarge peacock-blue"
                    style="width: 130px">

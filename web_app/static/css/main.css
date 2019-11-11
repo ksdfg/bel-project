@@ -1,6 +1,14 @@
+:root {
+    --peacock-blue: #00aeef
+}
+
 .peacock-blue, .hover-peacock-blue:hover {
-    color: #000 !important;
-    background-color: #00aeef !important
+    color: #fff !important;
+    background-color: var(--peacock-blue) !important
+}
+
+.border-peacock-blue, .hover-border-peacock-blue:hover {
+    border-color: var(--peacock-blue) !important
 }
 
 table {
@@ -9,13 +17,14 @@ table {
 }
 
 td, th {
-    border: 1px solid #00aeef;
+    border: 1px solid var(--peacock-blue);
     text-align: center;
     padding: 8px;
 }
 
 th {
-    background-color: #00aeef;
+    background-color: var(--peacock-blue);
+    color: #fff;
 }
 
 tr:nth-child(even) {
@@ -24,8 +33,4 @@ tr:nth-child(even) {
 
 select {
     text-align: center;
-}
-
-select:after {
-
 }

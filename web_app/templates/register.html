@@ -30,19 +30,22 @@
 <body {% if error %} onload="document.getElementById('error-display').style.display = 'block'" {% endif %}>
 <div class="w3-container w3-padding">
     <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}"></span>
-    <span class="w3-right w3-margin-top w3-margin-right" style="font-size: xx-large; font-style: oblique">
+    <span class="w3-display-topmiddle" style="margin-top: 4%; font-size: xx-large; font-style: oblique">
         <b>Register</b></span>
 </div>
 
 <div class="w3-bar peacock-blue">
-    <button class="w3-bar-item w3-button" onclick="location.href = '/';" style="width: 10%">Home</button>
-    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/register';" style="width: 10%">Register
+    <button class="w3-bar-item w3-button" onclick="location.href = '/';" style="width: 10%"><b>Home</b></button>
+
+    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/register';" style="width: 10%">
+        <b>Register</b>
     </button>
     {% if session.username %}
-    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/logout';" style="width: 10%">Logout
+    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/logout';" style="width: 10%"><b>Logout</b>
     </button>
     {% else %}
-    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/login';" style="width: 10%">Login</button>
+    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/login';" style="width: 10%"><b>Login</b>
+    </button>
     {% endif %}
 </div>
 
@@ -60,28 +63,31 @@
             <label for="name" style="padding-left: 5%">
                 <b>Name : </b>
             </label>
-            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" type="text" id="name" name="name" {%
-                   if name %} value={{name}} {% endif %} style="width: 100%; padding-left: 5%; padding-right: 5%"
-                   required>
+            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
+                   id="name" name="name" {% if name %} value={{name}} {% endif %}
+                   style="width: 100%; padding-left: 5%; padding-right: 5%" required autofocus>
             <br><br>
             <label for="number" style="padding-left: 5%">
                 <b>Contact Number : </b>
             </label>
-            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" type="text" id="number" name="contact"
+            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
+                   id="number" name="contact"
                    minlength="10" maxlength="10" {% if contact %} value={{contact}} {% endif %}
                    style="width: 100%; padding-left: 5%; padding-right: 5%" onfocusout="phoneValidate()" required>
             <br><br>
             <label for="email" style="padding-left: 5%">
                 <b>Email ID : </b>
             </label>
-            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" type="text" id="email" name="email" {%
+            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
+                   id="email" name="email" {%
                    if email %} value={{email}} {% endif %} onfocusout="emailValidate()"
                    style="width: 100%; padding-left: 5%; padding-right: 5%" required>
             <br><br>
             <label for="region" style="padding-left: 5%">
                 <b>Region : </b>
             </label>
-            <select class="w3-select w3-round-xxlarge w3-border" id="region" name="region" {% if region %}
+            <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue" id="region" name="region" {% if
+                    region %}
                     value={{region}} {% endif %} style="width: 100%" required>
                 <option value="nr">North Region</option>
                 <option value="er">East Region</option>
@@ -91,7 +97,8 @@
             <label for="address" style="padding-left: 5%">
                 <b>Address : </b>
             </label>
-            <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" id="address" name="address" {% if
+            <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" id="address"
+                      name="address" {% if
                       address %} value={{address}} {% endif %} rows="5"
                       style="width: 100%; padding-left: 5%; padding-right: 5%" required></textarea>
             <br><br>
@@ -101,14 +108,16 @@
             <label for="id" style="padding-left: 5%">
                 <b>Region ID : </b>
             </label>
-            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" type="text" id="id" name="id"
+            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
+                   id="id" name="id"
                    maxlength="2" {% if id %} value={{id}} {% endif %}
                    style="width: 100%; padding-left: 5%; padding-right: 5%" required>
             <br><br>
             <label for="addr" style="padding-left: 5%">
                 <b>Address : </b>
             </label>
-            <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" id="addr" name="address" {% if
+            <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" id="addr"
+                      name="address" {% if
                       address %} value={{address}} {% endif %} rows="5"
                       style="width: 100%; padding-left: 5%; padding-right: 5%" required></textarea>
             <br><br>
@@ -117,19 +126,22 @@
             <label for="username" style="padding-left: 5%">
                 <b>Username : </b>
             </label>
-            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" type="text" id="username"
+            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
+                   id="username"
                    name="username" maxlength="10"
                    {% if username %} value={{username}} {% endif %} style="width: 100%" required><br><br>
             <label for="password" style="padding-left: 5%">
                 <b>Password : </b>
             </label>
-            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" type="password" id="password"
+            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="password"
+                   id="password"
                    name="password" style="width: 100%; padding-left: 5%; padding-right: 5%" required>
             <br><br>
             <label for="conf-password" style="padding-left: 5%">
                 <b>Confirm Password : </b>
             </label>
-            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" type="password" id="conf-password"
+            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="password"
+                   id="conf-password"
                    name="confirm password" style="width: 100%; padding-left: 5%; padding-right: 5%" required>
             <br>
 
@@ -137,7 +149,8 @@
 
         <div class="w3-center w3-padding-small">
             <input type="submit" value="Register" class="w3-btn w3-round-xxlarge peacock-blue"><br>
-            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border" name="role" value={{role}}
+            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" name="role"
+                   value={{role}}
                    style="visibility: hidden">
         </div>
     </form>
@@ -149,7 +162,8 @@
             <label for="role">
                 <b>Select role of user : </b>
             </label>
-            <select class="w3-select w3-round-xxlarge w3-border hover-peacock-blue" id="role" name="role">
+            <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" id="role"
+                    name="role">
                 <option value="engineer">Engineer</option>
                 <option value="call_center">Call Center Operative</option>
                 <option value="bel_mgr">BEL Manager</option>
