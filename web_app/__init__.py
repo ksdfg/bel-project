@@ -89,15 +89,21 @@ def add_machine_submit():
         return render_template('add_machine.html', customers=loads(get(url + 'api/retrieve/customers').text),
                                success="Machine Added")
     else:
-        print(dict(request.form))
         return render_template('add_machine.html', customers=loads(get(url + 'api/retrieve/customers').text),
                                error=response, **request.form)
 
 
-@app.route('/test')
-def test():
-    users = [{'id': '1', 'name': 'generic name', 'email': 'generic@email.ext', 'phone': '9011152660', 'year': '3rd',
-              'extra': 'works'},
-             {'id': '1', 'name': 'generic name', 'email': 'generic@email.ext', 'phone': '9011152660', 'year': '3rd',
-              'extra': 'fine'}]
-    return render_template('users.html', users=users, extra_columns={'Extra Column': 'extra'})
+# render add customer page
+@app.route('/add-customer')
+def add_customer_page():
+    return render_template('add_customer.html')
+
+
+# add customer to db
+@app.route('/add-customer/submit', methods=['POST'])
+def add_customer_submit():
+    response = post(url + 'api/add/customer', data=dict(request.form)).text
+    if response == 'ok':
+        return render_template('add_customer.html', success="Customer Added")
+    else:
+        return render_template('add_customer.html', error=response, **request.form)

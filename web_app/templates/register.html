@@ -5,29 +5,13 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/w3.css') }}">
     <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/main.css') }}">
-
-    <script type="application/javascript">
-        function phoneValidate() {
-            if (!Number.isInteger(Number(document.getElementById('number').value)) ||
-                document.getElementById('number').value === '') {
-                document.getElementById('error-content').innerHTML = 'Invalid Contact Number'
-                document.getElementById('error-display').style.display = 'Block'
-            }
-        }
-
-        function emailValidate() {
-            if (!document.getElementById('email').value.match('.+@.+\\..+')) {
-                document.getElementById('error-content').innerHTML = 'Invalid E-Mail ID'
-                document.getElementById('error-display').style.display = 'Block'
-            }
-        }
-    </script>
+    <script src="{{ url_for(endpoint='static', filename='js/main.js') }}"></script>
 
     <link rel="icon" href="{{ url_for(endpoint='static', filename='images/bel-icon.png') }}">
     <title>Register</title>
 </head>
 
-<body {% if error %} onload="document.getElementById('error-display').style.display = 'block'" {% endif %}>
+<body {% if error %} onload="showMessage()" {% endif %}>
 <div class="w3-container w3-padding">
     <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}"></span>
     <span class="w3-display-topmiddle" style="margin-top: 4%; font-size: xx-large; font-style: oblique">
@@ -127,9 +111,8 @@
                 <b>Username : </b>
             </label>
             <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
-                   id="username"
-                   name="username" maxlength="10"
-                   {% if username %} value={{username}} {% endif %} style="width: 100%" required><br><br>
+                   id="username" name="username" maxlength="10" {% if username %} value={{username}} {% endif %}
+                   style="width: 100%; padding-left: 5%; padding-right: 5%" required><br><br>
             <label for="password" style="padding-left: 5%">
                 <b>Password : </b>
             </label>
@@ -176,15 +159,15 @@
 
     {% endif %}
 
-    <div id="error-display" class="w3-modal">
+    <div id="message-display" class="w3-modal">
         <div class="w3-modal-content w3-animate-top w3-card-4" style="width: 25%">
             <header class="w3-container w3-red w3-center">
-                    <span onclick="document.getElementById('error-display').style.display='none'"
+                    <span onclick="document.getElementById('message-display').style.display='none'"
                           class="w3-button w3-display-topright">&times;</span>
                 <h2>Error</h2>
             </header>
             <div class="w3-container w3-center">
-                <p id="error-content">
+                <p id="message-content">
                     {% if error %}
                     {{error}}
                     {% endif %}

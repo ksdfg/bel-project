@@ -6,10 +6,10 @@
     <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/main.css') }}">
     <script src="{{ url_for(endpoint='static', filename='js/main.js') }}"></script>
 
-    {% if Location %}
+    {% if Address %}
     <script type="application/javascript">
         function showMessage() {
-            document.getElementById('location').innerHTML = '{{Location}}'
+            document.getElementById('address').innerHTML = '{{Address}}'
             document.getElementById('message-display').style.display = 'block'
         }
     </script>
@@ -23,7 +23,7 @@
 <div class="w3-container w3-padding">
     <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}"></span>
     <span class="w3-display-topmiddle" style="margin-top: 4%; font-size: xx-large; font-style: oblique">
-        <b>Add Machine</b></span>
+        <b>Add Customer</b></span>
 </div>
 
 <div class="w3-bar peacock-blue">
@@ -40,47 +40,56 @@
 
 <div class="w3-container">
 
-    <form name="addMachine" method="post" action="/add-machine/submit">
+    <form name="addMachine" method="post" action="/add-customer/submit">
         <div style="padding-left: 30%; padding-right: 30%">
-            <label for="slno" style="padding-left: 5%">
-                <b>Serial Number : </b>
+            <label for="id" style="padding-left: 5%">
+                <b>ID : </b>
             </label>
             <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="number"
-                   id="slno" name="SlNo" {% if SlNo %} value={{SlNo}} {% endif %}}
+                   id="id" name="ID" {% if ID %} value={{ID}} {% endif %}}
                    style="padding-left: 5%; padding-right: 5%" required>
-            <br><br>
-            <label for="model" style="padding-left: 5%">
-                <b>Model : </b>
+            <br>
+            <label for="name" style="padding-left: 5%">
+                <b>Name : </b>
             </label>
             <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
-                   id="model" name="Model" {% if Model %} value={{Model}} {% endif %}}
+                   id="name" name="Name" {% if Name %} value={{Name}} {% endif %}}
                    style="padding-left: 5%; padding-right: 5%" required>
-            <br><br>
-            <label for="customer" style="padding-left: 5%">
-                <b>Customer : </b>
+            <br>
+            <label for="contact-person" style="padding-left: 5%">
+                <b>Contact Person Name : </b>
             </label>
-            <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" id="customer"
-                    name="CustID" {% if Customer %} value={{Customer}} {% endif %}} required>
-                {% for customer in customers %}
-                <option value="{{customer[0]}}">{{customer[1]}}</option>
-                {% endfor %}
-            </select>
-            <br><br>
-            <label for="location" style="padding-left: 5%">
-                <b>Location : </b>
+            <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
+                   id="contact-person" name="ContactPerson" {% if ContactPerson %} value={{ContactPerson}} {% endif %}}
+                   style="padding-left: 5%; padding-right: 5%" required>
+            <br>
+            <label for="contact-no" style="padding-left: 5%">
+                <b>Contact Person Phone No. : </b>
             </label>
-            <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" id="location"
-                      name="Location" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"
-                      {% if Location %} onload="document.getElementById('location').innerHTML = '{{Location}}'"
-                      {% endif %} required></textarea>
+            <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
+                   id="contact-no" name="ContactNo" {% if ContactNo %} value={{ContactNo}} {% endif %}}
+                   style="padding-left: 5%; padding-right: 5%" onfocusout="phoneValidate" required>
+            <br>
+            <label for="email" style="padding-left: 5%">
+                <b>Email ID : </b>
+            </label>
+            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
+                   id="email" name="email" {%
+                   if email %} value={{email}} {% endif %} onfocusout="emailValidate()"
+                   style="width: 100%; padding-left: 5%; padding-right: 5%" required>
+            <br>
+            <label for="address" style="padding-left: 5%">
+                <b>Address : </b>
+            </label>
+            <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" id="address"
+                      name="Address" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"
+                      required></textarea>
             <br><br>
         </div>
 
         <div class="w3-center">
             <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
         </div>
-
-        <input style="visibility: hidden" name="Status" value="Installation Pending">
     </form>
 
     <div id="message-display" class="w3-modal">

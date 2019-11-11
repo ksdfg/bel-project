@@ -1,5 +1,5 @@
 from json import dumps
-from re import compile, match
+from re import match
 
 from flask import Flask, request
 from mysql.connector import connect, IntegrityError
@@ -224,20 +224,31 @@ def get_customers():
     return dumps(dbcursor.fetchall())
 
 
+# to make sure values to be inserted in db are properly formatted
+def parameterise(params: list):
+    for i in range(len(params)):
+        if len(params[i]) == 0:  # empty field, set to null
+            params[i] = 'Null';
+        elif match(r'\D', params[i]):  # non integer field, surround in ""
+            params[i] = f'"{params[i]}"'
+    return params
+
+
 # add a machine in the system db
-@app.route('/api/add/machine', methods=['POST'])
-def add_machine():
+@app.route('/api/add/<table>', methods=['POST'])
+def add_to_table(table):
     try:
-        pattern = compile(r'\D')
+        print(f"""
+        insert into {table}({','.join(request.form.keys())}) values
+        ({','.join(parameterise(list(request.form.values())))})
+        """)
         dbcursor.execute(f"""
-        insert into machine({','.join(request.form.keys())}) values 
-        ({','.join(
-            map(lambda x: '"{}"'.format(x) if match(pattern, x) else x, request.form.values())
-        )})
+        insert into {table}({','.join(request.form.keys())}) values
+        ({','.join(parameterise(list(request.form.values())))})
         """)
         db.commit()
         return 'ok'
     except IntegrityError:
-        return 'Machine Already Exists'
+        return f'{str(table).capitalize()} Already Exists'
     except Exception as e:
         return str(e)
