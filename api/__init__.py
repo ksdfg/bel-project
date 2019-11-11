@@ -225,10 +225,10 @@ def get_customers():
 
 
 # to make sure values to be inserted in db are properly formatted
-def parameterise(params: list):
+def parameterize(params: list):
     for i in range(len(params)):
         if len(params[i]) == 0:  # empty field, set to null
-            params[i] = 'Null';
+            params[i] = None
         elif match(r'\D', params[i]):  # non integer field, surround in ""
             params[i] = f'"{params[i]}"'
     return params
@@ -240,11 +240,11 @@ def add_to_table(table):
     try:
         print(f"""
         insert into {table}({','.join(request.form.keys())}) values
-        ({','.join(parameterise(list(request.form.values())))})
+        ({','.join(parameterize(list(request.form.values())))})
         """)
         dbcursor.execute(f"""
         insert into {table}({','.join(request.form.keys())}) values
-        ({','.join(parameterise(list(request.form.values())))})
+        ({','.join(parameterize(list(request.form.values())))})
         """)
         db.commit()
         return 'ok'
