@@ -20,19 +20,20 @@
 </head>
 
 <body {% if success or error %} onload="showMessage()" {% endif %}>
-<div class="w3-container w3-padding">
+<div class="w3-container w3-padding w3-hide-small">
     <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}"></span>
     <span class="w3-display-topmiddle" style="margin-top: 4%; font-size: xx-large; font-style: oblique">
         <b>Add Customer</b></span>
 </div>
 
-<div class="w3-bar peacock-blue">
-    <button class="w3-bar-item w3-button" onclick="location.href = '/';" style="width: 10%"><b>Home</b></button>
+<div class="w3-bar peacock-blue w3-row">
+    <button class="w3-bar-item w3-button w3-col l2" onclick="location.href = '/';" message-><b>Home</b>
+    </button>
 
-    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/register';" style="width: 10%">
+    <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/register';" message->
         <b>Register</b>
     </button>
-    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/logout';" style="width: 10%"><b>Logout</b>
+    <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/logout';" message-><b>Logout</b>
     </button>
 </div>
 
@@ -41,50 +42,55 @@
 <div class="w3-container">
 
     <form name="addMachine" method="post" action="/add-customer/submit">
-        <div style="padding-left: 30%; padding-right: 30%">
-            <label for="id" style="padding-left: 5%">
-                <b>ID : </b>
-            </label>
-            <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="number"
-                   id="id" name="ID" {% if ID %} value={{ID}} {% endif %}}
-                   style="padding-left: 5%; padding-right: 5%" required>
-            <br>
-            <label for="name" style="padding-left: 5%">
-                <b>Name : </b>
-            </label>
-            <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
-                   id="name" name="Name" {% if Name %} value={{Name}} {% endif %}}
-                   style="padding-left: 5%; padding-right: 5%" required>
-            <br>
-            <label for="contact-person" style="padding-left: 5%">
-                <b>Contact Person Name : </b>
-            </label>
-            <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
-                   id="contact-person" name="ContactPerson" {% if ContactPerson %} value={{ContactPerson}} {% endif %}}
-                   style="padding-left: 5%; padding-right: 5%" required>
-            <br>
-            <label for="contact-no" style="padding-left: 5%">
-                <b>Contact Person Phone No. : </b>
-            </label>
-            <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
-                   id="contact-no" name="ContactNo" {% if ContactNo %} value={{ContactNo}} {% endif %}}
-                   style="padding-left: 5%; padding-right: 5%" onfocusout="phoneValidate" required>
-            <br>
-            <label for="email" style="padding-left: 5%">
-                <b>Email ID : </b>
-            </label>
-            <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
-                   id="email" name="email" {%
-                   if email %} value={{email}} {% endif %} onfocusout="emailValidate()"
-                   style="width: 100%; padding-left: 5%; padding-right: 5%" required>
-            <br>
-            <label for="address" style="padding-left: 5%">
-                <b>Address : </b>
-            </label>
-            <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" id="address"
-                      name="Address" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"
-                      required></textarea>
-            <br><br>
+        <div class="w3-row">
+            <div class="w3-col l3 w3-hide-small" style="padding-left: 25%"><p></p></div>
+            <div class="w3-col l6">
+                <label for="id" style="padding-left: 5%">
+                    <b>ID : </b>
+                </label>
+                <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="number"
+                       id="id" name="ID" {% if ID %} value={{ID}} {% endif %}}
+                       style="padding-left: 5%; padding-right: 5%" required>
+                <br>
+                <label for="name" style="padding-left: 5%">
+                    <b>Name : </b>
+                </label>
+                <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
+                       id="name" name="Name" {% if Name %} value={{Name}} {% endif %}}
+                       style="padding-left: 5%; padding-right: 5%" required>
+                <br>
+                <label for="contact-person" style="padding-left: 5%">
+                    <b>Contact Person Name : </b>
+                </label>
+                <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
+                       id="contact-person" name="ContactPerson" {% if ContactPerson %} value={{ContactPerson}} {% endif
+                       %}}
+                       style="padding-left: 5%; padding-right: 5%" required>
+                <br>
+                <label for="contact-no" style="padding-left: 5%">
+                    <b>Contact Person Phone No. : </b>
+                </label>
+                <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
+                       id="contact-no" name="ContactNo" {% if ContactNo %} value={{ContactNo}} {% endif %}}
+                       style="padding-left: 5%; padding-right: 5%" onfocusout="phoneValidate" required>
+                <br>
+                <label for="email" style="padding-left: 5%">
+                    <b>Email ID : </b>
+                </label>
+                <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
+                       id="email" name="email" {%
+                       if email %} value={{email}} {% endif %} onfocusout="emailValidate()"
+                       style="width: 100%; padding-left: 5%; padding-right: 5%" required>
+                <br>
+                <label for="address" style="padding-left: 5%">
+                    <b>Address : </b>
+                </label>
+                <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue"
+                          id="address"
+                          name="Address" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"
+                          required></textarea>
+                <br><br>
+            </div>
         </div>
 
         <div class="w3-center">

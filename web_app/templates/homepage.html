@@ -11,35 +11,37 @@
 </head>
 
 <body>
-<div class="w3-container w3-padding">
+<div class="w3-container w3-padding w3-hide-small">
     <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}"></span>
     <span class="w3-display-topmiddle" style="margin-top: 4%; font-size: xx-large; font-style: oblique">
         <b>Welcome, {{username}}</b></span>
 </div>
 
-<div class="w3-bar peacock-blue">
-    <button class="w3-bar-item w3-button" onclick="location.href = '/';" style="width: 10%"><b>Home</b></button>
-    {% if role == 'call_center' %}
-    <div class="w3-dropdown-hover">
-        <button class="w3-button" style="width: 100%"><b>Manage Machines</b></button>
-        <div class="w3-dropdown-content w3-bar-block w3-card-4 w3-center">
-            <a href="/add-machine" class="w3-bar-item w3-button">Add Machine</a>
-        </div>
-    </div>
-    <div class="w3-dropdown-hover">
-        <button class="w3-button" style="width: 100%"><b>Manage Customers</b></button>
-        <div class="w3-dropdown-content w3-bar-block w3-card-4 w3-center">
-            <a href="/add-customer" class="w3-bar-item w3-button">Add Customer</a>
-        </div>
-    </div>
-    {% endif %}
-
-    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/register';" style="width: 10%">
+<div class="w3-bar peacock-blue w3-row">
+    <button class="w3-bar-item w3-button w3-col l2" onclick="location.href = '/';"><b>Home</b></button>
+    <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/register';">
         <b>Register</b>
     </button>
-    <button class="w3-bar-item w3-button w3-right" onclick="location.href = '/logout';" style="width: 10%"><b>Logout</b>
+    <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/logout';"><b>Logout</b>
     </button>
 </div>
+
+<div class="w3-sidebar w3-bar-block w3-border-right border-peacock-blue w3-col l4 s7 w3-center peacock-blue"
+     style="display:none" id="mySidebar">
+    <button onclick="document.getElementById('mySidebar').style.display = 'none'" class="w3-bar-item w3-large">Close
+        &times;
+    </button>
+    {% if role == 'call_center' %}
+    <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Machines</b></p>
+    <a href="/add-machine" class="w3-bar-item w3-button">Add Machine</a>
+    <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Customers</b></p>
+    <a href="/add-customer" class="w3-bar-item w3-button">Add Customer</a>
+    {% endif %}
+</div>
+
+<button class="w3-button w3-xlarge"
+        onclick="document.getElementById('mySidebar').style.display = 'block';">☰
+</button>
 
 <br><br>
 
