@@ -182,6 +182,14 @@ def homepage_date():
             i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
         data['complaints'] = res
 
+        # get all machines that are to be installed assigned to the region
+        dbcursor.execute(f"""
+            Select m.SlNo, c.Name, m.Location
+            from (machine m join customer c on m.CustID = c.ID) join reg_center rc on m.Region = rc.ID
+            where rc.username = '{request.form['username']}' and m.Status = 'Installation Pending'
+        """)
+        data['installations'] = dbcursor.fetchall()
+
         # get all machines that are allocated to all engineers in the region which are due for pm
         dbcursor.execute(f"""
         select m.Location, e.Name, next_pm(m.SlNo)
@@ -217,10 +225,10 @@ def homepage_date():
     return dumps(data)
 
 
-# get list of all customers
-@app.route('/api/retrieve/customers', methods=['GET'])
+# just retrieve data from db
+@app.route('/api/retrieve', methods=['GET'])
 def get_customers():
-    dbcursor.execute('select ID, Name from customer')
+    dbcursor.execute(f"select {', '.join(request.args.getlist('fields'))} from {request.args.get('table')}")
     return dumps(dbcursor.fetchall())
 
 
@@ -234,14 +242,10 @@ def parameterize(params: list):
     return params
 
 
-# add a machine in the system db
+# add an entry in the system db
 @app.route('/api/add/<table>', methods=['POST'])
 def add_to_table(table):
     try:
-        print(f"""
-        insert into {table}({','.join(request.form.keys())}) values
-        ({','.join(parameterize(list(request.form.values())))})
-        """)
         dbcursor.execute(f"""
         insert into {table}({','.join(request.form.keys())}) values
         ({','.join(parameterize(list(request.form.values())))})
@@ -250,5 +254,20 @@ def add_to_table(table):
         return 'ok'
     except IntegrityError:
         return f'{str(table).capitalize()} Already Exists'
+    except Exception as e:
+        return str(e)
+
+
+# edit an entry in the db
+@app.route('/api/edit/<table>', methods=['POST'])
+def edit_row(table):
+    try:
+        dbcursor.execute(f"""
+            update {table}
+            set {', '.join(map(lambda x: x + ' = ' + parameterize([request.form[x]])[0], list(request.form.keys())[:-2]))}
+            where {request.form['primary_key']} = {parameterize([request.form[request.form['primary_key']]])[0]}
+        """)
+        db.commit()
+        return 'ok'
     except Exception as e:
         return str(e)

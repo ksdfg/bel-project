@@ -78,7 +78,11 @@ def register_submit():
 # render add machine page
 @app.route('/add-machine')
 def add_machine_page():
-    return render_template('add_machine.html', customers=loads(get(url + 'api/retrieve/customers').text))
+    return render_template('add_machine.html',
+                           customers=loads(get(url + 'api/retrieve',
+                                               params={'fields': ['ID', 'Name'], 'table': 'customer'}).text),
+                           regions=loads(get(url + 'api/retrieve',
+                                             params={'fields': ['ID', 'Name'], 'table': 'reg_center'}).text))
 
 
 # add machine to db
@@ -86,10 +90,18 @@ def add_machine_page():
 def add_machine_submit():
     response = post(url + 'api/add/machine', data=dict(request.form)).text
     if response == 'ok':
-        return render_template('add_machine.html', customers=loads(get(url + 'api/retrieve/customers').text),
+        return render_template('add_machine.html',
+                               customers=loads(get(url + 'api/retrieve',
+                                                   params={'fields': ['ID', 'Name'], 'table': 'customer'}).text),
+                               regions=loads(get(url + 'api/retrieve',
+                                                 params={'table': 'reg_center', 'fields': ['ID', 'Name']}).text),
                                success="Machine Added")
     else:
-        return render_template('add_machine.html', customers=loads(get(url + 'api/retrieve/customers').text),
+        return render_template('add_machine.html',
+                               customers=loads(get(url + 'api/retrieve',
+                                                   params={'fields': ['ID', 'Name'], 'table': 'customer'}).text),
+                               regions=loads(get(url + 'api/retrieve',
+                                                 params={'table': 'reg_center', 'fields': ['ID', 'Name']}).text),
                                error=response, **request.form)
 
 
@@ -107,3 +119,25 @@ def add_customer_submit():
         return render_template('add_customer.html', success="Customer Added")
     else:
         return render_template('add_customer.html', error=response, **request.form)
+
+
+# render edit customer details page
+@app.route('/edit-customer')
+def edit_customer_page():
+    return render_template('edit_customer.html', **request.args)
+
+
+# edit customer details in db
+@app.route('/edit-customer/submit', methods=['POST'])
+def edit_customer_submit():
+    print(request.form)
+    payload = dict()
+    for key in request.form.keys():
+        if len(request.form[key]) > 0:
+            payload[key] = request.form[key]
+    payload['primary_key'] = 'ID'
+    response = post(url + 'api/edit/customer', data=payload).text
+    if response == 'ok':
+        return render_template('edit_customer.html', success="Customer Added")
+    else:
+        return render_template('edit_customer.html', error=response, **request.form)

@@ -42,7 +42,7 @@
 <div class="w3-container">
     <form name="addMachine" method="post" action="/add-machine/submit">
         <div class="w3-row">
-            <div class="w3-col l3 w3-hide-small" style="padding-left: 25%"><p></p></div>
+            <div class="w3-col l3 w3-hide-small"><p></p></div>
             <div class="w3-col l6">
                 <label for="slno" style="padding-left: 5%">
                     <b>Serial Number : </b>
@@ -78,11 +78,21 @@
                           {% if Location %} onload="document.getElementById('location').innerHTML = '{{Location}}'"
                           {% endif %} required></textarea>
                 <br><br>
-            </div>
-        </div>
+                <label for="region" style="padding-left: 5%">
+                    <b>Region : </b>
+                </label>
+                <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
+                        id="region" name="Region" {% if Region %} value={{Region}} {% endif %}} required>
+                    {% for region in regions %}
+                    <option value="{{region[0]}}">{{region[1]}}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
 
-        <div class="w3-center">
-            <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
+                <div class="w3-center">
+                    <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
+                </div>
+            </div>
         </div>
 
         <input style="visibility: hidden" name="Status" value="Installation Pending">

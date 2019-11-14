@@ -11,9 +11,10 @@
 </head>
 
 <body>
-<div class="w3-container w3-padding w3-hide-small w3-hide-medium">
+<div class="w3-container w3-padding">
     <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}"></span>
-    <span class="w3-display-topmiddle" style="margin-top: 4%; font-size: xx-large; font-style: oblique">
+    <span class="w3-display-topmiddle w3-hide-small w3-hide-medium"
+          style="margin-top: 4%; font-size: xx-large; font-style: oblique">
         <b>Welcome, {{username}}</b></span>
 </div>
 
@@ -26,7 +27,7 @@
     </button>
 </div>
 
-<div class="w3-sidebar w3-bar-block w3-border-right border-peacock-blue w3-col l4 s7 w3-center peacock-blue"
+<div class="w3-sidebar w3-bar-block w3-border-right border-peacock-blue w3-col l2 s7 w3-center peacock-blue"
      style="display:none" id="mySidebar">
     <button onclick="document.getElementById('mySidebar').style.display = 'none'" class="w3-bar-item w3-large">Close
         &times;
@@ -93,6 +94,31 @@
                 {% for comp in complaints %}
                 <tr>
                     {% for data in comp %}
+                    <td>{{data}}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <br><br>
+        {% endif %}
+
+        {% if installations %}
+        <div class="w3-responsive">
+            <table>
+                <caption><h3>Machines to be installed</h3></caption>
+                <thead>
+                <tr>
+                    <th>Sl No.</th>
+                    <th>Customer</th>
+                    <th>Machine Location</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for installation in installations %}
+                <tr>
+                    {% for data in installation %}
                     <td>{{data}}</td>
                     {% endfor %}
                 </tr>
