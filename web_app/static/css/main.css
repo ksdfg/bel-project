@@ -13,7 +13,8 @@
 
 table {
     border-collapse: collapse;
-    width: 50%;
+    width: 60%;
+    margin: auto;
 }
 
 td, th {

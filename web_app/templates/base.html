@@ -33,14 +33,14 @@
 <br><br>
 
 <div class="w3-container">
-
+    {% block full_page_content %}
     <div class="w3-row">
         <div class="w3-col l3 w3-hide-small"><p></p></div>
         <div class="w3-col l6">
             {% block page_content %}{% endblock %}
         </div>
     </div>
-
+    {% endblock %}
 </div>
 
 <div id="message-display" class="w3-modal">

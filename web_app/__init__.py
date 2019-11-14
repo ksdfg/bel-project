@@ -75,6 +75,15 @@ def register_submit():
     return render_template('register.html', **request.form, error=res)  # in case of errors
 
 
+# view data of some table
+@app.route('/view/<table>')
+def view_table(table):
+    return render_template('view.html',
+                           fields=loads(get(url + 'api/retrieve/fields', params={'table': table}).text),
+                           values=loads(get(url + 'api/retrieve', params={'table': table, 'fields': '*'}).text),
+                           table=table)
+
+
 # render add machine page
 @app.route('/add-machine')
 def add_machine_page():

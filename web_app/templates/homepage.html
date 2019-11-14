@@ -37,6 +37,8 @@
     <a href="/add-machine" class="w3-bar-item w3-button">Add Machine</a>
     <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Customers</b></p>
     <a href="/add-customer" class="w3-bar-item w3-button">Add Customer</a>
+    <a href="/edit-customer" class="w3-bar-item w3-button">Edit Customer Details</a>
+    <a href="/view/customer" class="w3-bar-item w3-button">View Customers</a>
     {% endif %}
 </div>
 
@@ -48,7 +50,7 @@
 
 <div class="w3-container">
 
-    <div class="w3-responsive" id="tables" align="center">
+    <div class="w3-responsive" id="tables">
         {% if role == 'bel_mgr' or role == 'call_center' %}
         <table>
             <tbody>
