@@ -150,3 +150,9 @@ def edit_customer_submit():
         return render_template('edit_customer.html', success="Customer Added")
     else:
         return render_template('edit_customer.html', error=response, **request.form)
+
+
+# for testing purpose
+@app.route('/test')
+def test():
+    return render_template('test.html')

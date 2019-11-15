@@ -1,71 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/w3.css') }}">
-    <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/main.css') }}">
+{% block body_onload %}{% if error %} onload="showMessage()" {% endif %}{% endblock %}
 
-    <link rel="icon" href="{{ url_for(endpoint='static', filename='images/bel-icon.png') }}">
-    <title>Login</title>
-</head>
+{% block page_title %} Login {% endblock %}
 
-<body {% if error %} onload="showMessage()" {% endif %}>
-<div class="w3-container w3-padding w3-hide-small w3-hide-medium">
-    <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}"></span>
-    <span class="w3-display-topmiddle" style="margin-top: 4%; font-size: xx-large; font-style: oblique">
-        <b>Login</b></span>
-</div>
-
-<div class="w3-bar peacock-blue w3-row">
-    <button class="w3-bar-item w3-button w3-col l2" onclick="location.href = '/';"><b>Home</b></button>
-
-    <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/register';">
-        <b>Register</b>
-    </button>
-    <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/logout';"><b>Logout</b>
-    </button>
-</div>
-
-<br><br>
-
-<div class="w3-container">
-
-    <div class="w3-display-middle w3-center w3-large">
-        <form name="loginForm" method="post" action="/login/submit">
-            <input type="text" class="w3-input w3-border border-peacock-blue w3-round-xxlarge" name="username"
+{% block page_content %}
+<div class="w3-center w3-large">
+    <form name="loginForm" method="post" action="/login/submit">
+        <label>
+            <input type="text" class="w3-input w3-border border-peacock-blue w3-round-xxlarge center" name="username"
                    placeholder="Username" maxlength="10" {% if username %} value={{username}} {%endif %}
-                   style="text-align: center;" required autofocus>
-            <br>
-            <input type="password" class="w3-input w3-border border-peacock-blue w3-round-xxlarge" name="password"
-                   placeholder="Password" style="text-align: center;" required>
-            <br><br>
-            <input type="submit" value="Login" class="w3-btn w3-round-xxlarge peacock-blue"
-                   style="width: 130px">
-        </form>
+                   style="text-align: center; width: 50%" required autofocus>
+        </label>
         <br>
+        <label>
+            <input type="password" class="w3-input w3-border border-peacock-blue w3-round-xxlarge center"
+                   name="password"
+                   placeholder="Password" style="text-align: center; width: 50%" required>
+        </label>
+        <br><br>
+        <input type="submit" value="Login" class="w3-btn w3-round-xxlarge peacock-blue"
+               style="width: 130px">
+    </form>
+    <br>
 
-        <form name="registerForm" method="get" action="/register">
-            <input type="submit" value="Register" class="w3-btn w3-round-xxlarge peacock-blue"
-                   style="width: 130px">
-        </form>
-    </div>
-
-    {% if error %}
-    <div id="message-display" class="w3-modal">
-        <div class="w3-modal-content w3-animate-top w3-card-4" style="width: 25%">
-            <header class="w3-container w3-red">
-                    <span onclick="document.getElementById('message-display').style.display='none'"
-                          class="w3-button w3-display-topright">&times;</span>
-                <h2 align="center">Error</h2>
-            </header>
-            <div class="w3-container">
-                <p align="center">{{error}}</p>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-
+    <form name="registerForm" method="get" action="/register">
+        <input type="submit" value="Register" class="w3-btn w3-round-xxlarge peacock-blue"
+               style="width: 130px">
+    </form>
 </div>
-</body>
-</html>
+{% endblock %}
+
+{% block msg_title %}Error{% endblock %}
+{% block msg_content %}{% if error %}{{error}}{% endif %}{% endblock %}

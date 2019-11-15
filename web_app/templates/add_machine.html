@@ -1,130 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/w3.css') }}">
-    <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/main.css') }}">
-    <script src="{{ url_for(endpoint='static', filename='js/main.js') }}"></script>
+{% extends "base.html" %}
 
-    {% if Location %}
-    <script type="application/javascript">
-        function showMessage() {
-            document.getElementById('location').innerHTML = '{{Location}}'
-            document.getElementById('message-display').style.display = 'block'
-        }
-    </script>
-    {% endif %}
+{% block head_extra %}
+{% if Address %}
+<script type="application/javascript">
+    function showMessage() {
+        document.getElementById('address').innerHTML = '{{Address}}';
+        document.getElementById('message-display').style.display = 'block'
+    }
+</script>
+{% endif %}
+{% endblock %}
 
-    <link rel="icon" href="{{ url_for(endpoint='static', filename='images/bel-icon.png') }}">
-    <title>CRM</title>
-</head>
+{% block page_title %} Add Machine {% endblock %}
 
-<body {% if success or error %} onload="showMessage()" {% endif %}>
-<div class="w3-container w3-padding w3-hide-small w3-hide-medium">
-    <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}"></span>
-    <span class="w3-display-topmiddle" style="margin-top: 4%; font-size: xx-large; font-style: oblique">
-        <b>Add Machine</b></span>
-</div>
+{% block body_onload %}{% if success or error %} onload="showMessage()" {% endif %}{% endblock %}
 
-<div class="w3-bar peacock-blue w3-row">
-    <button class="w3-bar-item w3-button w3-col l2" onclick="location.href = '/';"><b>Home</b>
-    </button>
-    <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/register';">
-        <b>Register</b>
-    </button>
-    <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/logout';">
-        <b>Logout</b>
-    </button>
-</div>
+{% block page_content %}
+<form name="addMachine" method="post" action="/add-machine/submit">
+    <label for="slno" style="padding-left: 5%">
+        <b>Serial Number : </b>
+    </label>
+    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="number"
+           id="slno" name="SlNo" {% if SlNo %} value={{SlNo}} {% endif %}}
+           style="padding-left: 5%; padding-right: 5%" required>
+    <br><br>
+    <label for="model" style="padding-left: 5%">
+        <b>Model : </b>
+    </label>
+    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
+           id="model" name="Model" {% if Model %} value={{Model}} {% endif %}}
+           style="padding-left: 5%; padding-right: 5%" required>
+    <br><br>
+    <label for="customer" style="padding-left: 5%">
+        <b>Customer : </b>
+    </label>
+    <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
+            id="customer"
+            name="CustID" {% if Customer %} value={{Customer}} {% endif %}} required>
+        {% for customer in customers %}
+        <option value="{{customer[0]}}">{{customer[1]}}</option>
+        {% endfor %}
+    </select>
+    <br><br>
+    <label for="location" style="padding-left: 5%">
+        <b>Location : </b>
+    </label>
+    <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue"
+              id="location"
+              name="Location" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"
+              {% if Location %} onload="document.getElementById('location').innerHTML = '{{Location}}'"
+              {% endif %} required></textarea>
+    <br><br>
+    <label for="region" style="padding-left: 5%">
+        <b>Region : </b>
+    </label>
+    <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
+            id="region" name="Region" {% if Region %} value={{Region}} {% endif %}} required>
+        {% for region in regions %}
+        <option value="{{region[0]}}">{{region[1]}}</option>
+        {% endfor %}
+    </select>
+    <br><br>
 
-<br><br>
-
-<div class="w3-container">
-    <form name="addMachine" method="post" action="/add-machine/submit">
-        <div class="w3-row">
-            <div class="w3-col l3 w3-hide-small"><p></p></div>
-            <div class="w3-col l6">
-                <label for="slno" style="padding-left: 5%">
-                    <b>Serial Number : </b>
-                </label>
-                <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="number"
-                       id="slno" name="SlNo" {% if SlNo %} value={{SlNo}} {% endif %}}
-                       style="padding-left: 5%; padding-right: 5%" required>
-                <br><br>
-                <label for="model" style="padding-left: 5%">
-                    <b>Model : </b>
-                </label>
-                <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
-                       id="model" name="Model" {% if Model %} value={{Model}} {% endif %}}
-                       style="padding-left: 5%; padding-right: 5%" required>
-                <br><br>
-                <label for="customer" style="padding-left: 5%">
-                    <b>Customer : </b>
-                </label>
-                <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
-                        id="customer"
-                        name="CustID" {% if Customer %} value={{Customer}} {% endif %}} required>
-                    {% for customer in customers %}
-                    <option value="{{customer[0]}}">{{customer[1]}}</option>
-                    {% endfor %}
-                </select>
-                <br><br>
-                <label for="location" style="padding-left: 5%">
-                    <b>Location : </b>
-                </label>
-                <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue"
-                          id="location"
-                          name="Location" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"
-                          {% if Location %} onload="document.getElementById('location').innerHTML = '{{Location}}'"
-                          {% endif %} required></textarea>
-                <br><br>
-                <label for="region" style="padding-left: 5%">
-                    <b>Region : </b>
-                </label>
-                <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
-                        id="region" name="Region" {% if Region %} value={{Region}} {% endif %}} required>
-                    {% for region in regions %}
-                    <option value="{{region[0]}}">{{region[1]}}</option>
-                    {% endfor %}
-                </select>
-                <br><br>
-
-                <div class="w3-center">
-                    <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
-                </div>
-            </div>
-        </div>
-
-        <input style="visibility: hidden" name="Status" value="Installation Pending">
-    </form>
-
-    <div id="message-display" class="w3-modal">
-        <div class="w3-modal-content w3-animate-top w3-card-4" style="width: 25%">
-            {% if error %}
-            <header class="w3-container w3-red w3-center">
-                    <span onclick="document.getElementById('message-display').style.display='none'"
-                          class="w3-button w3-display-topright">&times;</span>
-                <h2>Error</h2>
-            </header>
-            {% elif success %}
-            <header class="w3-container w3-green w3-center">
-                    <span onclick="document.getElementById('message-display').style.display='none'"
-                          class="w3-button w3-display-topright">&times;</span>
-                <h2>Success</h2>
-            </header>
-            {% endif %}
-            <div class="w3-container w3-center">
-                <p id="message-content">
-                    {% if error %}
-                    {{error}}
-                    {% elif success %}
-                    {{success}}
-                    {% endif %}
-                </p>
-            </div>
-        </div>
+    <div class="w3-center">
+        <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
     </div>
 
-</div>
-</body>
-</html>
+    <input style="visibility: hidden" name="Status" value="Installation Pending">
+</form>
+{% endblock %}
+
+{% block msg_header_class %}
+{% if success %} class="w3-container w3-green w3-center" {% else %} class="w3-container w3-red w3-center" {% endif %}
+{% endblock %}
+{% block msg_title %}
+{% if error %}Error{% elif success %}Success{% endif %}
+{% endblock %}
+{% block msg_content %}
+{% if error %}{{error}}{% elif success %}{{success}}{% endif %}
+{% endblock %}

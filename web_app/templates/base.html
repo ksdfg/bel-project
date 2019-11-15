@@ -19,16 +19,18 @@
         <b>{% block page_title %}{% endblock %}</b></span>
 </div>
 
-{% block nav_bar %}
 <div class="w3-bar peacock-blue w3-row">
+    {% block nav_bar %}
     <button class="w3-bar-item w3-button w3-col l2" onclick="location.href = '/';"><b>Home</b></button>
     <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/register';">
         <b>Register</b>
     </button>
     <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/logout';"><b>Logout</b>
     </button>
+    {% endblock %}
 </div>
-{% endblock %}
+
+{% block before_content %}{% endblock %}
 
 <br><br>
 
