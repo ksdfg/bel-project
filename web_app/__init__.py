@@ -114,6 +114,18 @@ def add_machine_submit():
                                error=response, **request.form)
 
 
+# render edit customer details page
+@app.route('/edit/machine')
+def edit_machine_page():
+    return render_template('edit_machine.html', success='test',
+                           customers=loads(get(url + 'api/retrieve',
+                                               params={'fields': ['ID', 'Name'], 'table': 'customer'}).text),
+                           regions=loads(get(url + 'api/retrieve',
+                                             params={'table': 'reg_center', 'fields': ['ID', 'Name']}).text),
+                           engineers=loads(get(url + 'api/retrieve',
+                                               params={'table': 'engineer', 'fields': ['ID', 'Name']}).text))
+
+
 # render add customer page
 @app.route('/add-customer')
 def add_customer_page():
@@ -131,28 +143,24 @@ def add_customer_submit():
 
 
 # render edit customer details page
-@app.route('/edit-customer')
+@app.route('/edit/customer')
 def edit_customer_page():
-    return render_template('edit_customer.html', **request.args)
+    return render_template('edit_customer.html')
 
 
 # edit customer details in db
-@app.route('/edit-customer/submit', methods=['POST'])
+@app.route('/edit/customer/submit', methods=['POST'])
 def edit_customer_submit():
-    print(request.form)
-    payload = dict()
-    for key in request.form.keys():
-        if len(request.form[key]) > 0:
-            payload[key] = request.form[key]
-    payload['primary_key'] = 'ID'
-    response = post(url + 'api/edit/customer', data=payload).text
-    if response == 'ok':
-        return render_template('edit_customer.html', success="Customer Added")
+    if 'username' in session and session['role'] == 'call_center':
+        payload = dict()
+        for key in request.form.keys():
+            if len(request.form[key]) > 0:
+                payload[key] = request.form[key]
+        payload['primary_key'] = 'ID'
+        response = post(url + 'api/edit/customer', data=payload).text
+        if response == 'ok':
+            return render_template('edit_customer.html', success="Customer Added")
+        else:
+            return render_template('edit_customer.html', error=response, **request.form)
     else:
-        return render_template('edit_customer.html', error=response, **request.form)
-
-
-# for testing purpose
-@app.route('/test')
-def test():
-    return render_template('test.html')
+        return render_template('no_access.html')

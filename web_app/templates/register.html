@@ -4,6 +4,23 @@
 
 {% block page_title %} Register {% endblock %}
 
+{% block nav_bar %}
+<button class="w3-bar-item w3-button w3-col l2" onclick="location.href = '/';"><b>Home</b>
+</button>
+<button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/register';">
+    <b>Register</b>
+</button>
+{% if session.username %}
+<button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/logout';">
+    <b>Logout</b>
+</button>
+{% else %}
+<button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/login';">
+    <b>Login</b>
+</button>
+{% endif %}
+{% endblock %}
+
 {% block page_content %}
 {% if role %}
 
@@ -23,14 +40,14 @@
     <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
            id="number" name="contact"
            minlength="10" maxlength="10" {% if contact %} value={{contact}} {% endif %}
-           style="width: 100%; padding-left: 5%; padding-right: 5%" onfocusout="phoneValidate()" required>
+           style="width: 100%; padding-left: 5%; padding-right: 5%" onfocusout="phoneValidate('number')" required>
     <br><br>
     <label for="email" style="padding-left: 5%">
         <b>Email ID : </b>
     </label>
     <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
            id="email" name="email" {%
-           if email %} value={{email}} {% endif %} onfocusout="emailValidate()"
+           if email %} value={{email}} {% endif %} onfocusout="emailValidate('email')"
            style="width: 100%; padding-left: 5%; padding-right: 5%" required>
     <br><br>
     <label for="region" style="padding-left: 5%">

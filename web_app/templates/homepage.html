@@ -8,12 +8,18 @@
     <button onclick="document.getElementById('mySidebar').style.display = 'none'" class="w3-bar-item w3-large">Close
         &times;
     </button>
-    {% if role == 'call_center' %}
+    {% if role == 'call_center' or role == 'bel_mgr' %}
     <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Machines</b></p>
+    {% if role == 'call_center' %}
     <a href="/add-machine" class="w3-bar-item w3-button">Add Machine</a>
+    <a href="/edit/machine" class="w3-bar-item w3-button">Edit Machine Details</a>
+    {% endif %}
+    <a href="/view/machine" class="w3-bar-item w3-button">View Machines</a>
     <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Customers</b></p>
+    {% if role == 'call_center' %}
     <a href="/add-customer" class="w3-bar-item w3-button">Add Customer</a>
-    <a href="/edit-customer" class="w3-bar-item w3-button">Edit Customer Details</a>
+    <a href="/edit/customer" class="w3-bar-item w3-button">Edit Customer Details</a>
+    {% endif %}
     <a href="/view/customer" class="w3-bar-item w3-button">View Customers</a>
     {% endif %}
 </div>

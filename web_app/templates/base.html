@@ -37,8 +37,8 @@
 <div class="w3-container">
     {% block full_page_content %}
     <div class="w3-row">
-        <div class="w3-col l3 w3-hide-small"><p></p></div>
-        <div class="w3-col l6">
+        <div class="w3-col l2 w3-hide-small"><p></p></div>
+        <div class="w3-col l8">
             {% block page_content %}{% endblock %}
         </div>
     </div>
@@ -47,13 +47,13 @@
 
 <div id="message-display" class="w3-modal">
     <div class="w3-modal-content w3-animate-top w3-card-4" style="width: 25%">
-        <header {% block msg_header_class %} class="w3-container w3-red" {% endblock %}>
+        <header id="message-header" {% block msg_header_class %} class="w3-container w3-red" {% endblock %}>
                     <span onclick="document.getElementById('message-display').style.display='none'"
                           class="w3-button w3-display-topright">&times;</span>
-            <h2>{% block msg_title %}{% endblock %}</h2>
+            <h2 id="message-title">{% block msg_title %}{% endblock %}</h2>
         </header>
-        <div class="w3-container">
-            <p>{% block msg_content %}{% endblock %}</p>
+        <div class="w3-container w3-center">
+            <p id="message-content">{% block msg_content %}{% endblock %}</p>
         </div>
     </div>
 </div>
