@@ -1,7 +1,9 @@
+from functools import wraps
 from json import loads
 from os import getcwd
 
 from flask import render_template, redirect, url_for, request, session
+from jinja2.exceptions import TemplateNotFound
 from requests import get, post
 
 from api import app
@@ -18,6 +20,20 @@ url = "http://localhost/"  # url at which app is deployed
 def set_url(ip):
     global url
     url = "http://" + ip + "/"
+
+
+def authorized(roles):
+    def outer(func):
+        @wraps(func)
+        def inner(*args, **kwargs):
+            if 'username' in session and session['role'] in roles:
+                return func(*args, **kwargs)
+            else:
+                return render_template('no_access.html')
+
+        return inner
+
+    return outer
 
 
 # render homepage
@@ -83,21 +99,26 @@ def register_submit():
 
 # render page to add stuff to table
 @app.route('/add/<table>')
+@authorized(['call_center'])
 def add_table_value_page(table):
-    if table == 'machine':
-        return render_template('add_machine.html',
-                               customers=loads(get(url + 'api/retrieve',
-                                                   params={'fields': ['ID', 'Name'], 'table': 'customer'}).text)[
-                                   'values'],
-                               regions=loads(get(url + 'api/retrieve',
-                                                 params={'fields': ['ID', 'Name'], 'table': 'reg_center'}).text)[
-                                   'values'])
-    else:
-        return render_template('add_' + table + '.html')
+    try:
+        if table == 'machine':
+            return render_template('add_machine.html',
+                                   customers=loads(get(url + 'api/retrieve',
+                                                       params={'fields': ['ID', 'Name'], 'table': 'customer'}).text)[
+                                       'values'],
+                                   regions=loads(get(url + 'api/retrieve',
+                                                     params={'fields': ['ID', 'Name'], 'table': 'reg_center'}).text)[
+                                       'values'])
+        else:
+            return render_template('add_' + table + '.html')
+    except TemplateNotFound:
+        return render_template('no_access.html')
 
 
 # add customer to db
 @app.route('/add/customer/submit', methods=['POST'])
+@authorized(['call_center'])
 def add_customer_submit():
     response = post(url + 'api/add/customer', data=dict(request.form)).text
     if response == 'ok':
@@ -108,6 +129,7 @@ def add_customer_submit():
 
 # add machine to db
 @app.route('/add/machine/submit', methods=['POST'])
+@authorized(['call_center'])
 def add_machine_submit():
     response = post(url + 'api/add/machine', data=dict(request.form)).text
     if response == 'ok':
@@ -132,6 +154,7 @@ def add_machine_submit():
 
 # render edit details page
 @app.route('/edit/<table>')
+@authorized(['call_center'])
 def edit_table_value_page(table):
     if table == 'machine':
         return render_template('edit_machine.html', success='test',
@@ -149,42 +172,42 @@ def edit_table_value_page(table):
 
 
 # edit customer details in db
-@app.route('/edit/customer/submit', methods=['POST'])
-def edit_customer_submit():
-    if 'username' in session and session['role'] == 'call_center':
-        payload = dict()
-        for key in request.form.keys():
-            if len(request.form[key]) > 0:
-                payload[key] = request.form[key]
-        payload['primary_key'] = 'ID'
-        response = post(url + 'api/edit/customer', data=payload).text
-        if response == 'ok':
-            return render_template('edit_customer.html', success="Customer Added")
-        else:
-            return render_template('edit_customer.html', error=response, **request.form)
+@app.route('/edit/<table>/submit', methods=['POST'])
+@authorized(['call_center'])
+def edit_customer_submit(table):
+    payload = dict()
+    for key in request.form.keys():
+        if len(request.form[key]) > 0:
+            payload[key] = request.form[key]
+    response = post(url + 'api/edit/<table>', data=payload).text
+    if response == 'ok':
+        return render_template('edit_' + table + '.html', success=table.capitalize() + " Edited")
     else:
-        return render_template('no_access.html')
+        return render_template('edit_' + table + '.html', error=response, **request.form)
 
 
 # view data of some table
 @app.route('/view/<table>')
 def view_table(table):
-    if table == 'machine':
-        params = {}
-        fields = ['SlNo', 'Model', 'Status', 'Location', 'Region', 'ContactPerson', 'ContactNo',
-                  'ContactEmail', 'InstallDate', 'AllocatedTo', 'WarrantyExp', 'AMCStart', 'AMCExp']
-        params['fields'] = list(map(lambda x: 'm.' + x, fields))
-        params['fields'].insert(2, 'c.Name')
-        fields.insert(2, 'Customer')
-        params['fields'][-4] = 'e.Name'
-        params['table'] = '(machine m join engineer e on m.AllocatedTo = e.ID) join customer c on m.CustID = c.ID'
-        return render_template('view.html',
-                               fields=fields,
-                               values=loads(get(url + 'api/retrieve', params=params).text)['values'],
-                               table=table)
-    else:
-        response = loads(get(url + 'api/retrieve', params={'table': table, 'fields': '*'}).text)
-        return render_template('view.html',
-                               fields=response['fields'],
-                               values=response['values'],
-                               table=table)
+    response = loads(get(url + 'api/retrieve', params={'table': table, 'fields': '*'}).text)
+    return render_template('view.html',
+                           fields=response['fields'],
+                           values=response['values'],
+                           table=table)
+
+
+# view data of machines
+@app.route('/view/machine')
+def view_machine():
+    params = {}
+    fields = ['SlNo', 'Model', 'Status', 'Location', 'Region', 'ContactPerson', 'ContactNo',
+              'ContactEmail', 'InstallDate', 'AllocatedTo', 'WarrantyExp', 'AMCStart', 'AMCExp']
+    params['fields'] = list(map(lambda x: 'm.' + x, fields))
+    params['fields'].insert(2, 'c.Name')
+    fields.insert(2, 'Customer')
+    params['fields'][-4] = 'e.Name'
+    params['table'] = '(machine m join engineer e on m.AllocatedTo = e.ID) join customer c on m.CustID = c.ID'
+    return render_template('view.html',
+                           fields=fields,
+                           values=loads(get(url + 'api/retrieve', params=params).text)['values'],
+                           table='machine')
