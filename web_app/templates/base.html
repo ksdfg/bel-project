@@ -21,12 +21,12 @@
 
 <div class="w3-bar peacock-blue w3-row">
     {% block nav_bar %}
-    <button class="w3-bar-item w3-button w3-col l2" onclick="location.href = '/';"><b>Home</b></button>
-    <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/register';">
+    <a class="w3-bar-item w3-button w3-col l2" onclick="location.href = '/';"><b>Home</b></a>
+    <a class="w3-bar-item w3-button w3-right w3-col l2" href="/register">
         <b>Register</b>
-    </button>
-    <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/logout';"><b>Logout</b>
-    </button>
+    </a>
+    <a class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/logout';"><b>Logout</b>
+    </a>
     {% endblock %}
 </div>
 

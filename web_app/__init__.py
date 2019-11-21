@@ -11,7 +11,13 @@ app.template_folder = getcwd() + r'\web_app\templates'
 app.static_folder = getcwd() + r'\web_app\static'
 app.secret_key = 'IB6TBIUKYBGF76VD'
 
-url = "http://localhost:5000/"  # url at which app is deployed
+url = "http://localhost/"  # url at which app is deployed
+
+
+# set url at which app is deployed
+def set_url(ip):
+    global url
+    url = "http://" + ip + "/"
 
 
 # render homepage
@@ -75,65 +81,23 @@ def register_submit():
     return render_template('register.html', **request.form, error=res)  # in case of errors
 
 
-# view data of some table
-@app.route('/view/<table>')
-def view_table(table):
-    return render_template('view.html',
-                           fields=loads(get(url + 'api/retrieve/fields', params={'table': table}).text),
-                           values=loads(get(url + 'api/retrieve', params={'table': table, 'fields': '*'}).text),
-                           table=table)
-
-
-# render add machine page
-@app.route('/add-machine')
-def add_machine_page():
-    return render_template('add_machine.html',
-                           customers=loads(get(url + 'api/retrieve',
-                                               params={'fields': ['ID', 'Name'], 'table': 'customer'}).text),
-                           regions=loads(get(url + 'api/retrieve',
-                                             params={'fields': ['ID', 'Name'], 'table': 'reg_center'}).text))
-
-
-# add machine to db
-@app.route('/add-machine/submit', methods=['POST'])
-def add_machine_submit():
-    response = post(url + 'api/add/machine', data=dict(request.form)).text
-    if response == 'ok':
+# render page to add stuff to table
+@app.route('/add/<table>')
+def add_table_value_page(table):
+    if table == 'machine':
         return render_template('add_machine.html',
                                customers=loads(get(url + 'api/retrieve',
-                                                   params={'fields': ['ID', 'Name'], 'table': 'customer'}).text),
+                                                   params={'fields': ['ID', 'Name'], 'table': 'customer'}).text)[
+                                   'values'],
                                regions=loads(get(url + 'api/retrieve',
-                                                 params={'table': 'reg_center', 'fields': ['ID', 'Name']}).text),
-                               success="Machine Added")
+                                                 params={'fields': ['ID', 'Name'], 'table': 'reg_center'}).text)[
+                                   'values'])
     else:
-        return render_template('add_machine.html',
-                               customers=loads(get(url + 'api/retrieve',
-                                                   params={'fields': ['ID', 'Name'], 'table': 'customer'}).text),
-                               regions=loads(get(url + 'api/retrieve',
-                                                 params={'table': 'reg_center', 'fields': ['ID', 'Name']}).text),
-                               error=response, **request.form)
-
-
-# render edit customer details page
-@app.route('/edit/machine')
-def edit_machine_page():
-    return render_template('edit_machine.html', success='test',
-                           customers=loads(get(url + 'api/retrieve',
-                                               params={'fields': ['ID', 'Name'], 'table': 'customer'}).text),
-                           regions=loads(get(url + 'api/retrieve',
-                                             params={'table': 'reg_center', 'fields': ['ID', 'Name']}).text),
-                           engineers=loads(get(url + 'api/retrieve',
-                                               params={'table': 'engineer', 'fields': ['ID', 'Name']}).text))
-
-
-# render add customer page
-@app.route('/add-customer')
-def add_customer_page():
-    return render_template('add_customer.html')
+        return render_template('add_' + table + '.html')
 
 
 # add customer to db
-@app.route('/add-customer/submit', methods=['POST'])
+@app.route('/add/customer/submit', methods=['POST'])
 def add_customer_submit():
     response = post(url + 'api/add/customer', data=dict(request.form)).text
     if response == 'ok':
@@ -142,10 +106,46 @@ def add_customer_submit():
         return render_template('add_customer.html', error=response, **request.form)
 
 
-# render edit customer details page
-@app.route('/edit/customer')
-def edit_customer_page():
-    return render_template('edit_customer.html')
+# add machine to db
+@app.route('/add/machine/submit', methods=['POST'])
+def add_machine_submit():
+    response = post(url + 'api/add/machine', data=dict(request.form)).text
+    if response == 'ok':
+        return render_template('add_machine.html',
+                               customers=loads(get(url + 'api/retrieve',
+                                                   params={'fields': ['ID', 'Name'], 'table': 'customer'}).text)[
+                                   'values'],
+                               regions=loads(get(url + 'api/retrieve',
+                                                 params={'table': 'reg_center', 'fields': ['ID', 'Name']}).text)[
+                                   'values'],
+                               success="Machine Added")
+    else:
+        return render_template('add_machine.html',
+                               customers=loads(get(url + 'api/retrieve',
+                                                   params={'fields': ['ID', 'Name'], 'table': 'customer'}).text)[
+                                   'values'],
+                               regions=loads(get(url + 'api/retrieve',
+                                                 params={'table': 'reg_center', 'fields': ['ID', 'Name']}).text)[
+                                   'values'],
+                               error=response, **request.form)
+
+
+# render edit details page
+@app.route('/edit/<table>')
+def edit_table_value_page(table):
+    if table == 'machine':
+        return render_template('edit_machine.html', success='test',
+                               customers=loads(get(url + 'api/retrieve',
+                                                   params={'fields': ['ID', 'Name'], 'table': 'customer'}).text)[
+                                   'values'],
+                               regions=loads(get(url + 'api/retrieve',
+                                                 params={'table': 'reg_center', 'fields': ['ID', 'Name']}).text)[
+                                   'values'],
+                               engineers=loads(get(url + 'api/retrieve',
+                                                   params={'table': 'engineer', 'fields': ['ID', 'Name']}).text)[
+                                   'values'])
+    else:
+        return render_template('edit_' + table + '.html')
 
 
 # edit customer details in db
@@ -164,3 +164,27 @@ def edit_customer_submit():
             return render_template('edit_customer.html', error=response, **request.form)
     else:
         return render_template('no_access.html')
+
+
+# view data of some table
+@app.route('/view/<table>')
+def view_table(table):
+    if table == 'machine':
+        params = {}
+        fields = ['SlNo', 'Model', 'Status', 'Location', 'Region', 'ContactPerson', 'ContactNo',
+                  'ContactEmail', 'InstallDate', 'AllocatedTo', 'WarrantyExp', 'AMCStart', 'AMCExp']
+        params['fields'] = list(map(lambda x: 'm.' + x, fields))
+        params['fields'].insert(2, 'c.Name')
+        fields.insert(2, 'Customer')
+        params['fields'][-4] = 'e.Name'
+        params['table'] = '(machine m join engineer e on m.AllocatedTo = e.ID) join customer c on m.CustID = c.ID'
+        return render_template('view.html',
+                               fields=fields,
+                               values=loads(get(url + 'api/retrieve', params=params).text)['values'],
+                               table=table)
+    else:
+        response = loads(get(url + 'api/retrieve', params={'table': table, 'fields': '*'}).text)
+        return render_template('view.html',
+                               fields=response['fields'],
+                               values=response['values'],
+                               table=table)

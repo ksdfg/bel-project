@@ -228,20 +228,23 @@ def homepage_date():
 # just retrieve data from db
 @app.route('/api/retrieve', methods=['GET'])
 def get_data():
+    data = {}
+
+    # get values in table
     dbcursor.execute(f"select {', '.join(request.args.getlist('fields'))} from {request.args.get('table')}")
-    res = list(map(lambda x: list(x), dbcursor.fetchall()))
-    for i in range(len(res)):
-        for j in range(len(res[i])):
-            if str(type(res[i][j])) == "<class 'datetime.date'>":
-                res[i][j] = str(res[i][j])
-    return dumps(res)
+    data['values'] = list(map(lambda x: list(x), dbcursor.fetchall()))
+    for i in range(len(data['values'])):
+        for j in range(len(data['values'][i])):
+            if str(type(data['values'][i][j])) == "<class 'datetime.date'>" or \
+                    str(type(data['values'][i][j])) == "<class 'datetime.datetime'>":
+                data['values'][i][j] = str(data['values'][i][j])
 
+    # get all fields
+    if len(request.args.get('table').split()) == 1:
+        dbcursor.execute(f"desc {request.args.get('table')}")
+        data['fields'] = list(map(lambda x: x[0], dbcursor.fetchall()))
 
-# retrieve list of all fields in a table
-@app.route('/api/retrieve/fields', methods=['GET'])
-def get_fields():
-    dbcursor.execute(f"desc {request.args.get('table')}")
-    return dumps(list(map(lambda x: x[0], dbcursor.fetchall())))
+    return dumps(data)
 
 
 # to make sure values to be inserted in db are properly formatted

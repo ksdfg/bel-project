@@ -1,3 +1,8 @@
-from web_app import app
+from waitress import serve
 
-app.run("localhost", threaded=True)
+from web_app import app, set_url
+
+set_url('localhost')  # url at which app is deployed
+
+# app.run('localhost', port=80)
+serve(app, host='localhost', port=80)
