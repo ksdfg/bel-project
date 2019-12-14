@@ -1,4 +1,12 @@
 <!DOCTYPE html>
+
+<!--
+  / _ \
+\_\(_)/_/
+ _//"\\_    I'm just a friendly spider, here to eat bugs...
+  /   \
+-->
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,7 +21,7 @@
 </head>
 <body {% block body_onload %}{% endblock %}>
 <div class="w3-container w3-padding">
-    <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}"></span>
+    <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}" alt="BEL"></span>
     <span class="w3-display-topmiddle w3-hide-small w3-hide-medium"
           style="margin-top: 4%; font-size: xx-large; font-style: oblique">
         <b>{% block page_title %}{% endblock %}</b></span>
@@ -21,12 +29,12 @@
 
 <div class="w3-bar peacock-blue w3-row">
     {% block nav_bar %}
-    <a class="w3-bar-item w3-button w3-col l2" onclick="location.href = '/';"><b>Home</b></a>
-    <a class="w3-bar-item w3-button w3-right w3-col l2" href="/register">
-        <b>Register</b>
-    </a>
-    <a class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/logout';"><b>Logout</b>
-    </a>
+        <a class="w3-bar-item w3-button w3-col l2" onclick="location.href = '/';"><b>Home</b></a>
+        <a class="w3-bar-item w3-button w3-right w3-col l2" href="/register">
+            <b>Register</b>
+        </a>
+        <a class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/logout';"><b>Logout</b>
+        </a>
     {% endblock %}
 </div>
 

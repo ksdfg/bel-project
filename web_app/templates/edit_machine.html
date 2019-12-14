@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block head_extra %}
-{% if Address %}
-<script type="application/javascript">
-    function showMessage() {
-        document.getElementById('address').innerHTML = '{{Address}}';
-        document.getElementById('message-display').style.display = 'block'
-    }
-</script>
-{% endif %}
+    {% if Address %}
+        <script type="application/javascript">
+            function showMessage() {
+                document.getElementById('address').innerHTML = '{{Address}}';
+                document.getElementById('message-display').style.display = 'block'
+            }
+        </script>
+    {% endif %}
 {% endblock %}
 
 {% block body_onload %}{% if success or error %} onload="showMessage()" {% endif %}{% endblock %}
@@ -16,135 +16,137 @@
 {% block page_title %}Edit Customer Details{% endblock %}
 
 {% block page_content %}
-<form method="post" action="/edit/machine/submit">
-    <label for="slno" style="padding-left: 5%">
-        <b>Serial Number : </b>
-    </label>
-    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="number"
-           id="slno" name="SlNo" {% if SlNo %} value={{SlNo}} {% endif %}}
-           style="padding-left: 5%; padding-right: 5%" required>
-    <br>
-    <label for="model" style="padding-left: 5%">
-        <b>Model : </b>
-    </label>
-    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
-           id="model" name="Model" {% if Model %} value={{Model}} {% endif %}}
-           style="padding-left: 5%; padding-right: 5%" required>
-    <br>
-    <label for="customer" style="padding-left: 5%">
-        <b>Customer : </b>
-    </label>
-    <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
-            id="customer"
-            name="CustID" {% if Customer %} value={{Customer}} {% endif %}} required>
-        <option value="">--- No Change ---</option>
-        {% for customer in customers %}
-        <option value="{{customer[0]}}">{{customer[1]}}</option>
-        {% endfor %}
-    </select>
-    <br><br>
-    <label for="status" style="padding-left: 5%">
-        <b>Status : </b>
-    </label>
-    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
-           id="status" name="Status" {% if Status %} value={{Status}} {% endif %}}
-           style="padding-left: 5%; padding-right: 5%" required>
-    <br>
-    <label for="location" style="padding-left: 5%">
-        <b>Location : </b>
-    </label>
-    <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue"
-              id="location"
-              name="Location" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"
-              {% if Location %} onload="document.getElementById('location').innerHTML = '{{Location}}'"
-              {% endif %} required></textarea>
-    <br>
-    <label for="region" style="padding-left: 5%">
-        <b>Region : </b>
-    </label>
-    <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
-            id="region" name="Region" {% if Region %} value={{Region}} {% endif %}} required>
-        <option value="">--- No Change ---</option>
-        {% for region in regions %}
-        <option value="{{region[0]}}">{{region[1]}}</option>
-        {% endfor %}
-    </select>
-    <br><br>
-    <label for="installed-date" style="padding-left: 5%">
-        <b>Installed On : </b>
-    </label>
-    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="date"
-           id="installed-date" name="InstallDate" {% if InstallDate %} value={{InstallDate}} {% endif %}}
-           style="padding-left: 5%; padding-right: 5%; text-align: center" required>
-    <br>
-    <label for="engineer" style="padding-left: 5%">
-        <b>Allocated to Engineer : </b>
-    </label>
-    <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
-            id="engineer" name="AllocatedTo" {% if AllocatedTo %} value={{AllocatedTo}} {% endif %}} required>
-        <option value="">--- No Change ---</option>
-        {% for engineer in engineers %}
-        <option value="{{engineer[0]}}">{{engineer[1]}}</option>
-        {% endfor %}
-    </select>
-    <br><br>
-    <label for="warranty-exp" style="padding-left: 5%">
-        <b>Warranty Expiry Date : </b>
-    </label>
-    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="date"
-           id="warranty-exp" name="WarrantyExp" {% if WarrantyExp %} value={{WarrantyExp}} {% endif %}}
-           style="padding-left: 5%; padding-right: 5%; text-align: center" required>
-    <br>
-    <label for="amc-start" style="padding-left: 5%">
-        <b>AMC Start Date : </b>
-    </label>
-    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="date"
-           id="amc-start" name="AMCStart" {% if AMCStart %} value={{AMCStart}} {% endif %}}
-           style="padding-left: 5%; padding-right: 5%; text-align: center" required>
-    <br>
-    <label for="amc-exp" style="padding-left: 5%">
-        <b>AMC Expiry Date : </b>
-    </label>
-    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="date"
-           id="amc-exp" name="AMCExp" {% if AMCExp %} value={{AMCExp}} {% endif %}}
-           style="padding-left: 5%; padding-right: 5%; text-align: center" required>
-    <br>
-    <label for="contact-person" style="padding-left: 5%">
-        <b>Contact Person : </b>
-    </label>
-    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
-           id="contact-person" name="ContactPerson" {% if ContactPerson %} value={{ContactPerson}} {% endif %}}
-           style="padding-left: 5%; padding-right: 5%" required>
-    <br>
-    <label for="number" style="padding-left: 5%">
-        <b>Contact Number : </b>
-    </label>
-    <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
-           id="number" name="contact" minlength="10" maxlength="10" {% if ContactNo %} value={{ContactNo}} {% endif %}
-           style="width: 100%; padding-left: 5%; padding-right: 5%" onfocusout="phoneValidate('number')" required>
-    <br>
-    <label for="email" style="padding-left: 5%">
-        <b>Contact Email ID : </b>
-    </label>
-    <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
-           id="email" name="email" {%
-           if ContactEmail %} value={{ContactEmail}} {% endif %} onfocusout="emailValidate('email')"
-           style="width: 100%; padding-left: 5%; padding-right: 5%" required>
-    <br><br>
+    <form method="post" action="/edit/machine/submit">
+        <label for="slno" style="padding-left: 5%">
+            <b>Serial Number : </b>
+        </label>
+        <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="number"
+               id="slno" name="SlNo" {% if SlNo %} value="{{ SlNo }}" {% endif %}
+               style="padding-left: 5%; padding-right: 5%" required>
+        <br>
+        <label for="model" style="padding-left: 5%">
+            <b>Model : </b>
+        </label>
+        <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
+               id="model" name="Model" {% if Model %} value="{{ Model }}" {% endif %}
+               style="padding-left: 5%; padding-right: 5%">
+        <br>
+        <label for="customer" style="padding-left: 5%">
+            <b>Customer : </b>
+        </label>
+        <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
+                id="customer"
+                name="CustID" {% if Customer %} value="{{ Customer }}" {% endif %}>
+            <option value="">--- No Change ---</option>
+            {% for customer in customers %}
+                <option value="{{ customer[0] }}">{{ customer[1] }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="status" style="padding-left: 5%">
+            <b>Status : </b>
+        </label>
+        <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
+               id="status" name="Status" {% if Status %} value="{{ Status }}" {% endif %}
+               style="padding-left: 5%; padding-right: 5%">
+        <br>
+        <label for="location" style="padding-left: 5%">
+            <b>Location : </b>
+        </label>
+        <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue"
+                  id="location"
+                  name="Location" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"
+                {% if Location %} onload="document.getElementById('location').innerHTML = '{{ Location }}'"
+                {% endif %}></textarea>
+        <br>
+        <label for="region" style="padding-left: 5%">
+            <b>Region : </b>
+        </label>
+        <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
+                id="region" name="Region" {% if Region %} value="{{ Region }}" {% endif %}>
+            <option value="">--- No Change ---</option>
+            {% for region in regions %}
+                <option value="{{ region[0] }}">{{ region[1] }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="installed-date" style="padding-left: 5%">
+            <b>Installed On : </b>
+        </label>
+        <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="date"
+               id="installed-date" name="InstallDate" {% if InstallDate %} value="{{ InstallDate }}" {% endif %}
+               style="padding-left: 5%; padding-right: 5%; text-align: center">
+        <br>
+        <label for="engineer" style="padding-left: 5%">
+            <b>Allocated to Engineer : </b>
+        </label>
+        <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
+                id="engineer" name="AllocatedTo" {% if AllocatedTo %} value="{{ AllocatedTo }}" {% endif %}>
+            <option value="">--- No Change ---</option>
+            {% for engineer in engineers %}
+                <option value="{{ engineer[0] }}">{{ engineer[1] }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="warranty-exp" style="padding-left: 5%">
+            <b>Warranty Expiry Date : </b>
+        </label>
+        <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="date"
+               id="warranty-exp" name="WarrantyExp" {% if WarrantyExp %} value="{{ WarrantyExp }}" {% endif %}
+               style=" padding-left: 5%; padding-right: 5%; text-align: center">
+        <br>
+        <label for="amc-start" style="padding-left: 5%">
+            <b>AMC Start Date : </b>
+        </label>
+        <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="date"
+               id="amc-start" name="AMCStart" {% if AMCStart %} value="{{ AMCStart }}" {% endif %}
+               style=" padding-left: 5%; padding-right: 5%; text-align: center">
+        <br>
+        <label for="amc-exp" style="padding-left: 5%">
+            <b>AMC Expiry Date : </b>
+        </label>
+        <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="date"
+               id="amc-exp" name="AMCExp" {% if AMCExp %} value="{{ AMCExp }}" {% endif %}
+               style=" padding-left: 5%; padding-right: 5%; text-align: center">
+        <br>
+        <label for="contact-person" style="padding-left: 5%">
+            <b>Contact Person : </b>
+        </label>
+        <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
+               id="contact-person" name="ContactPerson" {% if ContactPerson %} value="{{ ContactPerson }}" {% endif %}
+               style=" padding-left: 5%; padding-right: 5%">
+        <br>
+        <label for="number" style="padding-left: 5%">
+            <b>Contact Number : </b>
+        </label>
+        <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
+               id="number" name="contact" minlength="10" maxlength="10" {% if ContactNo %}
+               value="{{ ContactNo }}" {% endif %}
+               style="width: 100%; padding-left: 5%; padding-right: 5%" onfocusout="phoneValidate('number')">
+        <br>
+        <label for="email" style="padding-left: 5%">
+            <b>Contact Email ID : </b>
+        </label>
+        <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
+               id="email" name="email" {% if ContactEmail %} value="{{ ContactEmail }}" {% endif %} onfocusout="
+               emailValidate('email')"
+               style="width: 100%; padding-left: 5%; padding-right: 5%">
+        <br><br>
 
-    <div class="w3-center">
-        <input type="submit" value="Edit" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
-    </div>
-    <input style="visibility: hidden" name="primary_key" value="SlNo">
-</form>
+        <div class="w3-center">
+            <input type="submit" value="Edit" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
+        </div>
+        <input style="visibility: hidden" name="primary_key" value="SlNo">
+    </form>
 {% endblock %}
 
 {% block msg_header_class %}
-{% if success %} class="w3-container w3-green w3-center" {% else %} class="w3-container w3-red w3-center" {% endif %}
+    {% if success %} class="w3-container w3-green w3-center" {% else %} class="w3-container w3-red w3-center"
+    {% endif %}
 {% endblock %}
 {% block msg_title %}
-{% if error %}Error{% elif success %}Success{% endif %}
+    {% if error %}Error{% elif success %}Success{% endif %}
 {% endblock %}
 {% block msg_content %}
-{% if error %}{{error}}{% elif success %}{{success}}{% endif %}
+    {% if error %}{{ error }}{% elif success %}{{ success }}{% endif %}
 {% endblock %}

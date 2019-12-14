@@ -157,7 +157,7 @@ def add_machine_submit():
 @authorized(['call_center'])
 def edit_table_value_page(table):
     if table == 'machine':
-        return render_template('edit_machine.html', success='test',
+        return render_template('edit_machine.html',
                                customers=loads(get(url + 'api/retrieve',
                                                    params={'fields': ['ID', 'Name'], 'table': 'customer'}).text)[
                                    'values'],

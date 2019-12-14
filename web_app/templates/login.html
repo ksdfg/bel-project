@@ -5,30 +5,31 @@
 {% block page_title %} Login {% endblock %}
 
 {% block page_content %}
-<div class="w3-center w3-large">
-    <form name="loginForm" method="post" action="/login/submit">
-        <label>
-            <input type="text" class="w3-input w3-border border-peacock-blue w3-round-xxlarge center" name="username"
-                   placeholder="Username" maxlength="10" {% if username %} value={{username}} {%endif %}
-                   style="text-align: center; width: 50%" required autofocus>
-        </label>
+    <div class="w3-center w3-large">
+        <form name="loginForm" method="post" action="/login/submit">
+            <label>
+                <input type="text" class="w3-input w3-border border-peacock-blue w3-round-xxlarge center"
+                       name="username"
+                       placeholder="Username" maxlength="10" {% if username %} value="{{ username }}" {% endif %}
+                       style="text-align: center; width: 50%" required autofocus>
+            </label>
+            <br>
+            <label>
+                <input type="password" class="w3-input w3-border border-peacock-blue w3-round-xxlarge center"
+                       name="password"
+                       placeholder="Password" style="text-align: center; width: 50%" required>
+            </label>
+            <br><br>
+            <input type="submit" value="Login" class="w3-btn w3-round-xxlarge peacock-blue"
+                   style="width: 130px">
+        </form>
         <br>
-        <label>
-            <input type="password" class="w3-input w3-border border-peacock-blue w3-round-xxlarge center"
-                   name="password"
-                   placeholder="Password" style="text-align: center; width: 50%" required>
-        </label>
-        <br><br>
-        <input type="submit" value="Login" class="w3-btn w3-round-xxlarge peacock-blue"
-               style="width: 130px">
-    </form>
-    <br>
 
-    <form name="registerForm" method="get" action="/register">
-        <input type="submit" value="Register" class="w3-btn w3-round-xxlarge peacock-blue"
-               style="width: 130px">
-    </form>
-</div>
+        <form name="registerForm" method="get" action="/register">
+            <input type="submit" value="Register" class="w3-btn w3-round-xxlarge peacock-blue"
+                   style="width: 130px">
+        </form>
+    </div>
 {% endblock %}
 
 {% block msg_title %}Error{% endblock %}
