@@ -1,19 +1,19 @@
-from json import dumps
+from json import dumps, load
+from random import choice
 from re import match
+from string import ascii_letters, digits
 
 from flask import Flask, request
 from mysql.connector import connect, IntegrityError
 
 # create the flask app
-app = Flask('bel crm')
+app = Flask(__name__)
+app.secret_key = ''.join([choice(ascii_letters + digits) for _ in range(32)])
 
 # database object, connects to mysql
-db = connect(
-    host="localhost",
-    user="belmaster",
-    passwd="master",
-    database="beldb"
-)
+with open('config.json') as json_file:
+    config = load(json_file)
+db = connect(**config['database'])
 dbcursor = db.cursor()  # cursor that'll allow us to execute queries
 
 

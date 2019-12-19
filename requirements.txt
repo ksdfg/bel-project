@@ -1,4 +1,7 @@
+jinja2
 waitress
 requests
 flask
+flask-login
+flask-bcrypt
 mysql-connector-python

@@ -1,6 +1,6 @@
 from waitress import serve
 
-from web_app import app, set_url
+from crm.web_app import app, set_url
 
 set_url('localhost')  # url at which app is deployed
 

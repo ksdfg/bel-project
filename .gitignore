@@ -1,6 +1,7 @@
 *.xlsx
 *.docx
 *.pdf
+*.json
 *.iml
 notes.txt
 .idea

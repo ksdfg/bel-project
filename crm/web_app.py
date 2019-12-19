@@ -1,17 +1,11 @@
 from functools import wraps
 from json import loads
-from os import getcwd
 
 from flask import render_template, redirect, url_for, request, session
 from jinja2.exceptions import TemplateNotFound
 from requests import get, post
 
-from api import app
-
-# set app variables for web_app
-app.template_folder = getcwd() + r'\web_app\templates'
-app.static_folder = getcwd() + r'\web_app\static'
-app.secret_key = 'IB6TBIUKYBGF76VD'
+from crm import app
 
 url = "http://localhost/"  # url at which app is deployed
 
