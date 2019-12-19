@@ -10,7 +10,7 @@
     <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/register';">
         <b>Register</b>
     </button>
-    {% if session.username %}
+    {% if current_user.is_authorized %}
         <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/logout';">
             <b>Logout</b>
         </button>

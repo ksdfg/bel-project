@@ -1,14 +1,24 @@
+from functools import wraps
 from json import dumps, load
 from random import choice
 from re import match
 from string import ascii_letters, digits
+from traceback import print_exc
 
-from flask import Flask, request
+from flask import Flask, request, render_template
+from flask_login import LoginManager, current_user
 from mysql.connector import connect, IntegrityError
+
+from crm.user import User
 
 # create the flask app
 app = Flask(__name__)
 app.secret_key = ''.join([choice(ascii_letters + digits) for _ in range(32)])
+
+# create and initialize login manager
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
 
 # database object, connects to mysql
 with open('config.json') as json_file:
@@ -17,22 +27,50 @@ db = connect(**config['database'])
 dbcursor = db.cursor()  # cursor that'll allow us to execute queries
 
 
-# post request to login
-@app.route('/api/login', methods=["POST"])
-def validate_login():
+# load a user given their username
+@login_manager.user_loader
+def load_user(username):
+    dbcursor.execute(f"Select role from user where username = '{username}' and authorized = true ")  # get password
+    res = dbcursor.fetchone()
+    if res is None:
+        return None
+    return User(username=username, role=res[0])
+
+
+# load a user from request
+@login_manager.request_loader
+def load_user_from_request(request):
+    get = request.form.get if request.method == 'POST' else request.args.get
     try:
-        dbcursor.execute(
-            f"Select password, role from user where username = '{request.form['username']}'")  # get password
+        # get password
+        dbcursor.execute(f"""
+            Select password, role
+            from user
+            where username = '{get('username')}' and authorized = true
+        """)
         res = dbcursor.fetchone()
-        if res is None:
-            return dumps({'result': "No such Username"})
-        elif request.form['password'] in res:  # since fetchone returns tuple
-            return dumps({'result': 'true', 'role': res[1]})
+        if res is not None and get('password') in res:
+            return User(username=get('username'), role=res[1])
         else:
-            return dumps({'result': "Wrong Password"})
+            return None
     except Exception as e:
         print(e)
-        return dumps({'result': str(e)})
+        print_exc()
+        return None
+
+
+def authorized(roles):
+    def outer(func):
+        @wraps(func)
+        def inner(*args, **kwargs):
+            if current_user.role in roles:
+                return func(*args, **kwargs)
+            else:
+                return render_template('no_access.html')
+
+        return inner
+
+    return outer
 
 
 # post request to register a new user
@@ -78,151 +116,6 @@ def register():
     except Exception as e:
         print('entity', request.form['role'], e.__class__)
         return str(e)
-
-
-# get request to retrieve data to be displayed on homepage from database
-@app.route('/api/retrieve/homepage-data', methods=['GET'])
-def homepage_date():
-    data = dict()
-
-    if request.form['role'] == 'bel_mgr' or request.form['role'] == 'call_center':
-        # get total scrap value
-        dbcursor.execute(
-            "Select round(sum(m.price * e.Qty), 3) from eng_scrap e join material m on e.PartNo = m.PartNo")
-        res = dbcursor.fetchone()
-        data['scrap_money'] = res[0]
-        dbcursor.execute(
-            "Select round(sum(m.price * r.Qty), 3) from reg_scrap r join material m on r.PartNo = m.PartNo")
-        res = dbcursor.fetchone()
-        data['scrap_money'] += res[0]
-
-        # get high priority complaints
-        dbcursor.execute(f"""
-            Select t.Machine, c.Name, m.Location, e.Name, t.MadeOn
-            from (complaint t join engineer e on t.Engineer = e.ID) join
-            (machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo
-            where t.Priority = 'High' and t.Status = 'Open'
-        """)
-        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
-        for i in res:
-            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
-        data['complaints'] = res
-
-        # get number of machines under warranty
-        dbcursor.execute("select count(*) from machine where machine.WarrantyExp >= date(now());")  # in warranty
-        res = dbcursor.fetchone()
-        data['warranty_in'] = res[0]
-        dbcursor.execute("select count(*) from machine where machine.AMCExp >= date(now());")  # in warranty
-        res = dbcursor.fetchone()
-        data['amc_in'] = res[0]
-
-        # get number of machines out of amc and warranty
-        dbcursor.execute("""
-            select count(*) from machine 
-            where machine.AMCExp < date(now()) and machine.WarrantyExp < date(now());
-        """)  # in warranty
-        res = dbcursor.fetchone()
-        data['amc_warranty_out'] = res[0]
-
-    elif request.form['role'] == 'engineer':
-        # get all open complaints assigned to the engineer
-        dbcursor.execute(f"""
-            Select t.Machine, c.Name, m.Location, t.MadeOn
-            from (complaint t join engineer e on t.Engineer = e.ID) join
-            (machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo
-            where e.username = '{request.form['username']}' and t.Status = 'Open'
-        """)
-        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
-        for i in res:
-            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
-        data['complaints'] = res
-
-        # get all machines that are allocated to engineer which are due for pm
-        dbcursor.execute(f"""
-        select m.Location, next_pm(m.SlNo)
-        from machine m join engineer e on m.AllocatedTo = e.ID
-        where e.username = '{request.form['username']}' and
-            (next_pm(m.SlNo) <= m.WarrantyExp or next_pm(m.SlNo) between m.AMCStart and m.AMCExp) and 
-            next_pm(m.SlNo) >= date(now()) and
-            year(next_pm(m.SlNo)) = year(now()) and month(next_pm(m.SlNo)) = month(now());
-        """)
-        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
-        for i in res:
-            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
-        data['pm'] = res
-
-        # get all materials that the engineer has
-        dbcursor.execute(f"""
-            Select m.Desc, em.Qty
-            from material m join (eng_material em join engineer e on em.Engineer = e.ID) on m.PartNo = em.PartNo
-            where e.username = '{request.form['username']}'
-        """)
-        res = dbcursor.fetchall()
-        data['materials'] = res
-
-        # get all scrap materials that the regional center has
-        dbcursor.execute(f"""
-            Select m.Desc, em.Qty
-            from material m join (eng_scrap em join engineer e on em.Engineer = e.ID) on m.PartNo = em.PartNo
-            where e.username = '{request.form['username']}'
-        """)
-        res = dbcursor.fetchall()
-        data['scrap'] = res
-
-    elif request.form['role'] == 'reg_mgr':
-        # get all open complaints assigned to all engineers in the region
-        dbcursor.execute(f"""
-            Select t.Machine, c.Name, m.Location, e.Name, t.MadeOn
-            from (complaint t join (engineer e join reg_center rc on e.Region = rc.ID) on t.Engineer = e.ID) join
-                (machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo
-            where rc.username = '{request.form['username']}' and t.Status = 'Open' and t.Priority = 'High'
-        """)
-        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
-        for i in res:
-            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
-        data['complaints'] = res
-
-        # get all machines that are to be installed assigned to the region
-        dbcursor.execute(f"""
-            Select m.SlNo, c.Name, m.Location
-            from (machine m join customer c on m.CustID = c.ID) join reg_center rc on m.Region = rc.ID
-            where rc.username = '{request.form['username']}' and m.Status = 'Installation Pending'
-        """)
-        data['installations'] = dbcursor.fetchall()
-
-        # get all machines that are allocated to all engineers in the region which are due for pm
-        dbcursor.execute(f"""
-        select m.Location, e.Name, next_pm(m.SlNo)
-        from machine m join (engineer e join reg_center rc on e.Region = rc.ID) on m.AllocatedTo = e.ID
-        where rc.username = '{request.form['username']}' and
-            (next_pm(m.SlNo) <= m.WarrantyExp or next_pm(m.SlNo) between m.AMCStart and m.AMCExp) and 
-            next_pm(m.SlNo) >= date(now()) and
-            year(next_pm(m.SlNo)) = year(now()) and month(next_pm(m.SlNo)) = month(now());
-        """)
-        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
-        for i in res:
-            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
-        data['pm'] = res
-
-        # get all materials that the regional center has
-        dbcursor.execute(f"""
-            Select m.Desc, rm.Qty
-            from material m join (reg_materials rm join reg_center rc on rm.Region = rc.ID) on m.PartNo = rm.PartNo
-            where rc.username = '{request.form['username']}'
-        """)
-        res = dbcursor.fetchall()
-        data['materials'] = res
-
-        # get all scrap materials that the regional center has
-        dbcursor.execute(f"""
-            Select m.Desc, rm.Qty
-            from material m join (reg_scrap rm join reg_center rc on rm.Region = rc.ID) on m.PartNo = rm.PartNo
-            where rc.username = '{request.form['username']}'
-        """)
-        res = dbcursor.fetchall()
-        data['scrap'] = res
-
-    return dumps(data)
 
 
 # just retrieve data from db
