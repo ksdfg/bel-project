@@ -6,7 +6,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 from jinja2.exceptions import TemplateNotFound
 from requests import get, post
 
-from crm import app, login_manager, authorized, dbcursor
+from crm import app, login_manager, authorized, get_data
 
 url = "http://localhost/"  # url at which app is deployed
 
@@ -153,6 +153,7 @@ def edit_table_value_page(table):
 
 # edit customer details in db
 @app.route('/edit/<table>/submit', methods=['POST'])
+@login_required
 @authorized(['call_center'])
 def edit_customer_submit(table):
     payload = dict()
@@ -203,58 +204,41 @@ def homepage():
 
     if current_user.role == 'bel_mgr' or current_user.role == 'call_center':
         # get total scrap value
-        dbcursor.execute(
-            "Select round(sum(m.price * e.Qty), 3) from eng_scrap e join material m on e.PartNo = m.PartNo")
-        res = dbcursor.fetchone()
-        data['scrap_money'] = res[0]
-        dbcursor.execute(
-            "Select round(sum(m.price * r.Qty), 3) from reg_scrap r join material m on r.PartNo = m.PartNo")
-        res = dbcursor.fetchone()
-        data['scrap_money'] += res[0]
+        data['scrap_money'] = get_data(
+            "Select round(sum(m.price * e.Qty), 3) from eng_scrap e join material m on e.PartNo = m.PartNo")[0][0]
+        data['scrap_money'] += get_data(
+            "Select round(sum(m.price * r.Qty), 3) from reg_scrap r join material m on r.PartNo = m.PartNo")[0][0]
+
+        data['warranty_in'] = get_data(
+            "select count(*) from machine where machine.WarrantyExp >= date(now());")[0][0]  # in warranty
+        data['amc_in'] = get_data(
+            "select count(*) from machine where machine.AMCExp >= date(now());")[0][0]  # in amc
+
+        # get number of machines out of amc and warranty
+        data['amc_warranty_out'] = get_data("""
+            select count(*) from machine 
+            where machine.AMCExp < date(now()) and machine.WarrantyExp < date(now());
+        """)[0][0]
 
         # get high priority complaints
-        dbcursor.execute(f"""
+        data['complaints'] = get_data(f"""
             Select t.Machine, c.Name, m.Location, e.Name, t.MadeOn
             from (complaint t join engineer e on t.Engineer = e.ID) join
             (machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo
             where t.Priority = 'High' and t.Status = 'Open'
         """)
-        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
-        for i in res:
-            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
-        data['complaints'] = res
-
-        # get number of machines under warranty
-        dbcursor.execute("select count(*) from machine where machine.WarrantyExp >= date(now());")  # in warranty
-        res = dbcursor.fetchone()
-        data['warranty_in'] = res[0]
-        dbcursor.execute("select count(*) from machine where machine.AMCExp >= date(now());")  # in warranty
-        res = dbcursor.fetchone()
-        data['amc_in'] = res[0]
-
-        # get number of machines out of amc and warranty
-        dbcursor.execute("""
-            select count(*) from machine 
-            where machine.AMCExp < date(now()) and machine.WarrantyExp < date(now());
-        """)  # in warranty
-        res = dbcursor.fetchone()
-        data['amc_warranty_out'] = res[0]
 
     elif current_user.role == 'engineer':
         # get all open complaints assigned to the engineer
-        dbcursor.execute(f"""
+        data['complaints'] = get_data(f"""
             Select t.Machine, c.Name, m.Location, t.MadeOn
             from (complaint t join engineer e on t.Engineer = e.ID) join
             (machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo
             where e.username = '{current_user.username}' and t.Status = 'Open'
         """)
-        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
-        for i in res:
-            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
-        data['complaints'] = res
 
         # get all machines that are allocated to engineer which are due for pm
-        dbcursor.execute(f"""
+        data['pm'] = get_data(f"""
         select m.Location, next_pm(m.SlNo)
         from machine m join engineer e on m.AllocatedTo = e.ID
         where e.username = '{current_user.username}' and
@@ -262,52 +246,39 @@ def homepage():
             next_pm(m.SlNo) >= date(now()) and
             year(next_pm(m.SlNo)) = year(now()) and month(next_pm(m.SlNo)) = month(now());
         """)
-        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
-        for i in res:
-            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
-        data['pm'] = res
 
         # get all materials that the engineer has
-        dbcursor.execute(f"""
+        data['materials'] = get_data(f"""
             Select m.Desc, em.Qty
             from material m join (eng_material em join engineer e on em.Engineer = e.ID) on m.PartNo = em.PartNo
             where e.username = '{current_user.username}'
         """)
-        res = dbcursor.fetchall()
-        data['materials'] = res
 
         # get all scrap materials that the regional center has
-        dbcursor.execute(f"""
+        data['scrap'] = get_data(f"""
             Select m.Desc, em.Qty
             from material m join (eng_scrap em join engineer e on em.Engineer = e.ID) on m.PartNo = em.PartNo
             where e.username = '{current_user.username}'
         """)
-        res = dbcursor.fetchall()
-        data['scrap'] = res
 
     elif current_user.role == 'reg_mgr':
         # get all open complaints assigned to all engineers in the region
-        dbcursor.execute(f"""
+        data['complaints'] = get_data(f"""
             Select t.Machine, c.Name, m.Location, e.Name, t.MadeOn
             from (complaint t join (engineer e join reg_center rc on e.Region = rc.ID) on t.Engineer = e.ID) join
                 (machine m join customer c on c.ID = m.CustID) on t.Machine = m.SlNo
             where rc.username = '{current_user.username}' and t.Status = 'Open' and t.Priority = 'High'
         """)
-        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
-        for i in res:
-            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
-        data['complaints'] = res
 
         # get all machines that are to be installed assigned to the region
-        dbcursor.execute(f"""
+        data['installations'] = get_data(f"""
             Select m.SlNo, c.Name, m.Location
             from (machine m join customer c on m.CustID = c.ID) join reg_center rc on m.Region = rc.ID
             where rc.username = '{current_user.username}' and m.Status = 'Installation Pending'
         """)
-        data['installations'] = dbcursor.fetchall()
 
         # get all machines that are allocated to all engineers in the region which are due for pm
-        dbcursor.execute(f"""
+        data['pm'] = get_data(f"""
         select m.Location, e.Name, next_pm(m.SlNo)
         from machine m join (engineer e join reg_center rc on e.Region = rc.ID) on m.AllocatedTo = e.ID
         where rc.username = '{current_user.username}' and
@@ -315,28 +286,20 @@ def homepage():
             next_pm(m.SlNo) >= date(now()) and
             year(next_pm(m.SlNo)) = year(now()) and month(next_pm(m.SlNo)) = month(now());
         """)
-        res = list(map(list, dbcursor.fetchall()))  # convert tuples to lists
-        for i in res:
-            i[-1] = str(i[-1])  # convert datetime to string, since datetime is not serializable
-        data['pm'] = res
 
         # get all materials that the regional center has
-        dbcursor.execute(f"""
+        data['materials'] = get_data(f"""
             Select m.Desc, rm.Qty
             from material m join (reg_materials rm join reg_center rc on rm.Region = rc.ID) on m.PartNo = rm.PartNo
             where rc.username = '{current_user.username}'
         """)
-        res = dbcursor.fetchall()
-        data['materials'] = res
 
         # get all scrap materials that the regional center has
-        dbcursor.execute(f"""
+        data['scrap'] = get_data(f"""
             Select m.Desc, rm.Qty
             from material m join (reg_scrap rm join reg_center rc on rm.Region = rc.ID) on m.PartNo = rm.PartNo
             where rc.username = '{current_user.username}'
         """)
-        res = dbcursor.fetchall()
-        data['scrap'] = res
 
     return render_template(
         'homepage.html',

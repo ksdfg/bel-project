@@ -6,7 +6,7 @@ from string import ascii_letters, digits
 from traceback import print_exc
 
 from flask import Flask, request, render_template
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager, current_user, login_required
 from mysql.connector import connect, IntegrityError
 
 from crm.user import User
@@ -59,6 +59,8 @@ def load_user_from_request(request):
         return None
 
 
+# wrapper to check if currently logged in user is authorized for some function
+# remember to only apply this to functions which already have login_required applied
 def authorized(roles):
     def outer(func):
         @wraps(func)
@@ -66,7 +68,7 @@ def authorized(roles):
             if current_user.role in roles:
                 return func(*args, **kwargs)
             else:
-                return render_template('no_access.html')
+                return render_template('no_access.html')  # marquee ftw
 
         return inner
 
@@ -118,19 +120,26 @@ def register():
         return str(e)
 
 
-# just retrieve data from db
-@app.route('/api/retrieve', methods=['GET'])
-def get_data():
-    data = {}
+# fire and query and make sure that date and datetime results are converted to strings
+def get_data(query):
+    dbcursor.execute(query)
+    res = list(map(lambda x: list(x), dbcursor.fetchall()))
 
+    for i in range(len(res)):
+        for j in range(len(res[i])):
+            if str(type(res[i][j])) == "<class 'datetime.date'>" or \
+                    str(type(res[i][j])) == "<class 'datetime.datetime'>":
+                res[i][j] = str(res[i][j])
+
+    return res
+
+
+# api call to retrieve data from db
+@app.route('/api/retrieve', methods=['GET'])
+@login_required
+def get_data_api():
     # get values in table
-    dbcursor.execute(f"select {', '.join(request.args.getlist('fields'))} from {request.args.get('table')}")
-    data['values'] = list(map(lambda x: list(x), dbcursor.fetchall()))
-    for i in range(len(data['values'])):
-        for j in range(len(data['values'][i])):
-            if str(type(data['values'][i][j])) == "<class 'datetime.date'>" or \
-                    str(type(data['values'][i][j])) == "<class 'datetime.datetime'>":
-                data['values'][i][j] = str(data['values'][i][j])
+    data = {'values': get_data(f"select {', '.join(request.args.getlist('fields'))} from {request.args.get('table')}")}
 
     # get all fields
     if len(request.args.get('table').split()) == 1:
@@ -152,6 +161,7 @@ def parameterize(params: list):
 
 # add an entry in the system db
 @app.route('/api/add/<table>', methods=['POST'])
+@login_required
 def add_to_table(table):
     try:
         dbcursor.execute(f"""
@@ -168,6 +178,7 @@ def add_to_table(table):
 
 # edit an entry in the db
 @app.route('/api/edit/<table>', methods=['POST'])
+@login_required
 def edit_row(table):
     try:
         dbcursor.execute(f"""
