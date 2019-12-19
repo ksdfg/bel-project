@@ -6,6 +6,7 @@ from string import ascii_letters, digits
 from traceback import print_exc
 
 from flask import Flask, request, render_template
+from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user, login_required
 from mysql.connector import connect, IntegrityError
 
@@ -19,6 +20,8 @@ app.secret_key = ''.join([choice(ascii_letters + digits) for _ in range(32)])
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
+
+bcrypt = Bcrypt(app)
 
 # database object, connects to mysql
 with open('config.json') as json_file:
@@ -49,7 +52,7 @@ def load_user_from_request(request):
             where username = '{get('username')}' and authorized = true
         """)
         res = dbcursor.fetchone()
-        if res is not None and get('password') in res:
+        if res is not None and bcrypt.check_password_hash(res[0], get('password')):
             return User(username=get('username'), role=res[1])
         else:
             return None
