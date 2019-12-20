@@ -34,7 +34,7 @@ dbcursor = db.cursor()  # cursor that'll allow us to execute queries
 @login_manager.user_loader
 def load_user(username):
     try:
-        dbcursor.execute(f"Select role, auth_token from user where username = '{username}' and authorized = true ")
+        dbcursor.execute(f"Select role, auth_token from user where username = '{username}' ")
         res = dbcursor.fetchone()  # get user details
         if res is None:
             return None
@@ -48,6 +48,7 @@ def load_user(username):
 # load a user from request
 @login_manager.request_loader
 def load_user_from_request(request):
+    print(list(request.headers.keys()), request.form, request.args, sep='\n', end='\n\n')
     token = request.headers.get('auth_token')
     if token:
         try:
@@ -95,9 +96,9 @@ def register():
     # first register user
     try:
         dbcursor.execute(f"""
-            Insert into user(username, password, role) values 
+            Insert into user(username, password, auth_token, role) values 
             ('{request.form['username']}', '{bcrypt.generate_password_hash(request.form['password']).decode('utf-8')}', 
-                '{request.form['role']}')
+                '{''.join([choice(ascii_letters + digits) for _ in range(32)])}', '{request.form['role']}')
         """)
     except IntegrityError as e:
         print(e)
@@ -194,7 +195,7 @@ def edit_row(table):
     try:
         dbcursor.execute(f"""
             update {table}
-            set {', '.join(map(lambda x: x + ' = ' + parameterize([request.form[x]])[0], list(request.form.keys())[:-2]))}
+            set {', '.join(map(lambda x: x + ' = ' + parameterize([request.form[x]])[0], list(request.form.keys())[1:-1]))}
             where {request.form['primary_key']} = {parameterize([request.form[request.form['primary_key']]])[0]}
         """)
         db.commit()

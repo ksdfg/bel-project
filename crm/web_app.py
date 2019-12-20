@@ -29,14 +29,18 @@ def is_safe_url(target):
 def login():
     if request.method == 'POST':
         # login the user, then move on to destination
-        res = get_data(f"select password, role, auth_token from user where username = '{request.form['username']}'")
+        res = get_data(f"""
+            select password, role, auth_token 
+            from user 
+            where username = '{request.form['username']}' and authorized = true
+        """)
         if res and bcrypt.check_password_hash(res[0][0], request.form['password']):
             login_user(User(username=request.form['username'], role=res[0][1], auth_token=res[0][2]))
             print(request.form['username'] + " logged in!")
             dest = request.args.get("next")
             if not is_safe_url(dest):
                 return abort(400)
-            return redirect(dest or url_for("homepage"))
+            return redirect(dest)
 
         # in case there was an error while logging in
         return render_template('login.html', username=request.form['username'], error="Incorrect")
@@ -152,7 +156,8 @@ def edit_customer_submit(table):
     for key in request.form.keys():
         if len(request.form[key]) > 0:
             payload[key] = request.form[key]
-    response = post(url + 'api/edit/<table>', data=payload).text
+    print(payload)
+    response = post(url + f'api/edit/{table}', data=payload).text
     if response == 'ok':
         return render_template('edit_' + table + '.html', success=table.capitalize() + " Edited")
     else:
