@@ -6,7 +6,8 @@ from flask_login import login_user, current_user, logout_user, login_required
 from jinja2.exceptions import TemplateNotFound
 from requests import get, post
 
-from crm import app, login_manager, authorized, get_data
+from crm import app, authorized, get_data, bcrypt
+from crm.user import User
 
 url = "http://localhost/"  # url at which app is deployed
 
@@ -27,10 +28,10 @@ def is_safe_url(target):
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
-        user = login_manager.request_callback(request)
-        if user is not None:
-            # login the user, then move on to destination
-            login_user(user)
+        # login the user, then move on to destination
+        res = get_data(f"select password, role, auth_token from user where username = '{request.form['username']}'")
+        if res and bcrypt.check_password_hash(res[0][0], request.form['password']):
+            login_user(User(username=request.form['username'], role=res[0][1], auth_token=res[0][2]))
             print(request.form['username'] + " logged in!")
             dest = request.args.get("next")
             if not is_safe_url(dest):
@@ -38,7 +39,7 @@ def login():
             return redirect(dest or url_for("homepage"))
 
         # in case there was an error while logging in
-        return render_template('login.html', username=request.form['username'], error="Check Credentials and try again")
+        return render_template('login.html', username=request.form['username'], error="Incorrect")
 
     if current_user.is_authenticated:  # just cuz i saw some other sites do this...
         return render_template('login.html', username=current_user.username)
@@ -53,24 +54,15 @@ def logout():
     return redirect(url_for('homepage'))
 
 
-# render register page
-@app.route('/register')
+# register new user upon clicking register button in register.html, or render register page (wow, so much register)
+@app.route('/register', methods=['GET', 'POST'])
 def register_page():
     if request.method == 'POST':
         res = post(url + "api/add/user", data=dict(request.form)).text
         if res == 'done':
-            return redirect(url_for('login'))
+            return redirect(url_for('homepage'))
         return render_template('register.html', **request.form, error=res)  # in case of errors
     return render_template('register.html', role=request.args.get('role'), current_user=current_user)
-
-
-# register new user upon clicking register button in register.html (wow, so much register)
-@app.route('/register/submit', methods=["POST"])
-def register_submit():
-    res = post(url + "api/add/user", data=dict(request.form)).text
-    if res == 'done':
-        return redirect(url_for('login'))
-    return render_template('register.html', **request.form, error=res)  # in case of errors
 
 
 # render page to add stuff to table
@@ -171,7 +163,9 @@ def edit_customer_submit(table):
 @app.route('/view/<table>')
 @login_required
 def view_table(table):
-    response = loads(get(url + 'api/retrieve', params={'table': table, 'fields': '*'}).text)
+    res = get(url + 'api/retrieve', params={'table': table, 'fields': '*'},
+              headers={'auth_token': current_user.auth_token})
+    response = loads(res.text)
     return render_template('view.html',
                            fields=response['fields'],
                            values=response['values'],

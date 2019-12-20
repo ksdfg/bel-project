@@ -24,7 +24,7 @@
 {% block page_content %}
     {% if role %}
 
-        <form name="registerUser" method="post" action="/register/submit">
+        <form name="registerUser" method="post">
 
             {% if role == 'engineer' %}
                 <label for="name" style="padding-left: 5%">
@@ -125,7 +125,7 @@
 
     {% else %}
 
-        <form name="registerForm" method="get" action="/register">
+        <form name="registerForm" method="get">
             <label for="role">
                 <b>Select role of user : </b>
             </label>

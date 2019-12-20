@@ -7,7 +7,7 @@ from traceback import print_exc
 
 from flask import Flask, request, render_template
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, current_user, login_required
+from flask_login import LoginManager, current_user
 from mysql.connector import connect, IntegrityError
 
 from crm.user import User
@@ -33,33 +33,40 @@ dbcursor = db.cursor()  # cursor that'll allow us to execute queries
 # load a user given their username
 @login_manager.user_loader
 def load_user(username):
-    dbcursor.execute(f"Select role from user where username = '{username}' and authorized = true ")  # get password
-    res = dbcursor.fetchone()
-    if res is None:
+    try:
+        dbcursor.execute(f"Select role, auth_token from user where username = '{username}' and authorized = true ")
+        res = dbcursor.fetchone()  # get user details
+        if res is None:
+            return None
+        return User(username=username, role=res[0], auth_token=res[1])
+    except Exception as e:
+        print(e)
+        print_exc()
         return None
-    return User(username=username, role=res[0])
 
 
 # load a user from request
 @login_manager.request_loader
 def load_user_from_request(request):
-    get = request.form.get if request.method == 'POST' else request.args.get
-    try:
-        # get password
-        dbcursor.execute(f"""
-            Select password, role
-            from user
-            where username = '{get('username')}' and authorized = true
-        """)
-        res = dbcursor.fetchone()
-        if res is not None and bcrypt.check_password_hash(res[0], get('password')):
-            return User(username=get('username'), role=res[1])
-        else:
+    token = request.headers.get('auth_token')
+    if token:
+        try:
+            dbcursor.execute(f"""
+                Select username, role, auth_token
+                from user
+                where auth_token = '{token}' and authorized = true
+            """)
+            res = dbcursor.fetchone()
+            print(token, res)
+            if res is not None:
+                return User(username=res[0], role=res[1], auth_token=res[2])
+            else:
+                return None
+        except Exception as e:
+            print(e)
+            print_exc()
             return None
-    except Exception as e:
-        print(e)
-        print_exc()
-        return None
+    return None
 
 
 # wrapper to check if currently logged in user is authorized for some function
@@ -87,8 +94,11 @@ def register():
 
     # first register user
     try:
-        dbcursor.execute("Insert into user values (%s, %s, %s)", (request.form['username'], request.form['password'],
-                                                                  request.form['role']))
+        dbcursor.execute(f"""
+            Insert into user(username, password, role) values 
+            ('{request.form['username']}', '{bcrypt.generate_password_hash(request.form['password']).decode('utf-8')}', 
+                '{request.form['role']}')
+        """)
     except IntegrityError as e:
         print(e)
         return 'Username already taken'
@@ -139,10 +149,10 @@ def get_data(query):
 
 # api call to retrieve data from db
 @app.route('/api/retrieve', methods=['GET'])
-@login_required
 def get_data_api():
     # get values in table
-    data = {'values': get_data(f"select {', '.join(request.args.getlist('fields'))} from {request.args.get('table')}")}
+    data = {
+        'values': get_data(f"select {', '.join(request.args.getlist('fields'))} from {request.args.get('table')}")}
 
     # get all fields
     if len(request.args.get('table').split()) == 1:
@@ -164,7 +174,6 @@ def parameterize(params: list):
 
 # add an entry in the system db
 @app.route('/api/add/<table>', methods=['POST'])
-@login_required
 def add_to_table(table):
     try:
         dbcursor.execute(f"""
@@ -181,7 +190,6 @@ def add_to_table(table):
 
 # edit an entry in the db
 @app.route('/api/edit/<table>', methods=['POST'])
-@login_required
 def edit_row(table):
     try:
         dbcursor.execute(f"""
