@@ -5,6 +5,7 @@
 *.json
 *.iml
 notes.txt
-users.csv
+*.csv
 .idea
 venv
+data
