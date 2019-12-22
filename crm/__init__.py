@@ -5,9 +5,9 @@ from re import match
 from string import ascii_letters, digits
 from traceback import print_exc
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, session
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager, current_user, login_required
 from mysql.connector import connect, IntegrityError
 
 from crm.user import User
@@ -34,7 +34,7 @@ dbcursor = db.cursor()  # cursor that'll allow us to execute queries
 @login_manager.user_loader
 def load_user(username):
     try:
-        dbcursor.execute(f"Select role, auth_token from user where username = '{username}' ")
+        dbcursor.execute(f"Select role, auth_token from user where username = '{username}' and authorized = true")
         res = dbcursor.fetchone()  # get user details
         if res is None:
             return None
@@ -48,26 +48,28 @@ def load_user(username):
 # load a user from request
 @login_manager.request_loader
 def load_user_from_request(request):
-    print(list(request.headers.keys()), request.form, request.args, sep='\n', end='\n\n')
-    token = request.headers.get('auth_token')
-    if token:
+    if request.authorization:
         try:
             dbcursor.execute(f"""
-                Select username, role, auth_token
-                from user
-                where auth_token = '{token}' and authorized = true
+                Select role, auth_token 
+                from user 
+                where username = '{request.authorization.username}' and authorized = true
             """)
-            res = dbcursor.fetchone()
-            print(token, res)
-            if res is not None:
-                return User(username=res[0], role=res[1], auth_token=res[2])
-            else:
-                return None
+            res = dbcursor.fetchone()  # get user details
+            if res and request.authorization.password == res[1]:
+                return User(username=request.authorization.username, role=res[0], auth_token=res[1])
         except Exception as e:
             print(e)
             print_exc()
             return None
     return None
+
+
+# logout if session is idle for more than certain amount of time
+@app.before_request
+def session_timeout():
+    session.permanent = True
+    app.permanent_session_lifetime = config['session-timeout']
 
 
 # wrapper to check if currently logged in user is authorized for some function
@@ -150,6 +152,7 @@ def get_data(query):
 
 # api call to retrieve data from db
 @app.route('/api/retrieve', methods=['GET'])
+@login_required
 def get_data_api():
     # get values in table
     data = {
@@ -175,6 +178,7 @@ def parameterize(params: list):
 
 # add an entry in the system db
 @app.route('/api/add/<table>', methods=['POST'])
+@login_required
 def add_to_table(table):
     try:
         dbcursor.execute(f"""
@@ -191,6 +195,7 @@ def add_to_table(table):
 
 # edit an entry in the db
 @app.route('/api/edit/<table>', methods=['POST'])
+@login_required
 def edit_row(table):
     try:
         dbcursor.execute(f"""

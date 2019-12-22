@@ -1,4 +1,3 @@
-from json import loads
 from urllib.parse import urlparse, urljoin
 
 from flask import render_template, redirect, url_for, request, abort
@@ -9,7 +8,7 @@ from requests import get, post
 from crm import app, authorized, get_data, bcrypt
 from crm.user import User
 
-url = "http://localhost/"  # url at which app is deployed
+url = 'http://localhost:8080/'  # url at which app is deployed
 
 
 # set url at which app is deployed
@@ -77,12 +76,15 @@ def add_table_value_page(table):
     try:
         if table == 'machine':
             return render_template('add_machine.html',
-                                   customers=loads(get(url + 'api/retrieve',
-                                                       params={'fields': ['ID', 'Name'], 'table': 'customer'}).text)[
-                                       'values'],
-                                   regions=loads(get(url + 'api/retrieve',
-                                                     params={'fields': ['ID', 'Name'], 'table': 'reg_center'}).text)[
-                                       'values'])
+                                   customers=get(url + 'api/retrieve',
+                                                 params={'fields': ['ID', 'Name'], 'table': 'customer'},
+                                                 auth=(current_user.username, current_user.auth_token)
+                                                 ).json()['values'],
+                                   regions=get(url + 'api/retrieve',
+                                               params={'fields': ['ID', 'Name'], 'table': 'reg_center'},
+                                               auth=(current_user.username, current_user.auth_token)
+                                               ).json()['values']
+                                   )
         else:
             return render_template('add_' + table + '.html')
     except TemplateNotFound:
@@ -94,7 +96,8 @@ def add_table_value_page(table):
 @login_required
 @authorized(['call_center'])
 def add_customer_submit():
-    response = post(url + 'api/add/customer', data=dict(request.form)).text
+    response = post(url + 'api/add/customer', data=dict(request.form),
+                    auth=(current_user.username, current_user.auth_token)).text
     if response == 'ok':
         return render_template('add_customer.html', success="Customer Added")
     else:
@@ -106,24 +109,25 @@ def add_customer_submit():
 @login_required
 @authorized(['call_center'])
 def add_machine_submit():
-    response = post(url + 'api/add/machine', data=dict(request.form)).text
+    response = post(url + 'api/add/machine', data=dict(request.form),
+                    auth=(current_user.username, current_user.auth_token)).text
     if response == 'ok':
         return render_template('add_machine.html',
-                               customers=loads(get(url + 'api/retrieve',
-                                                   params={'fields': ['ID', 'Name'], 'table': 'customer'}).text)[
-                                   'values'],
-                               regions=loads(get(url + 'api/retrieve',
-                                                 params={'table': 'reg_center', 'fields': ['ID', 'Name']}).text)[
-                                   'values'],
+                               customers=get(url + 'api/retrieve',
+                                             params={'fields': ['ID', 'Name'], 'table': 'customer'},
+                                             auth=(current_user.username, current_user.auth_token)).json()['values'],
+                               regions=get(url + 'api/retrieve',
+                                           params={'table': 'reg_center', 'fields': ['ID', 'Name']},
+                                           auth=(current_user.username, current_user.auth_token)).json()['values'],
                                success="Machine Added")
     else:
         return render_template('add_machine.html',
-                               customers=loads(get(url + 'api/retrieve',
-                                                   params={'fields': ['ID', 'Name'], 'table': 'customer'}).text)[
-                                   'values'],
-                               regions=loads(get(url + 'api/retrieve',
-                                                 params={'table': 'reg_center', 'fields': ['ID', 'Name']}).text)[
-                                   'values'],
+                               customers=get(url + 'api/retrieve',
+                                             params={'fields': ['ID', 'Name'], 'table': 'customer'},
+                                             auth=(current_user.username, current_user.auth_token)).json()['values'],
+                               regions=get(url + 'api/retrieve',
+                                           params={'table': 'reg_center', 'fields': ['ID', 'Name']},
+                                           auth=(current_user.username, current_user.auth_token)).json()['values'],
                                error=response, **request.form)
 
 
@@ -134,15 +138,16 @@ def add_machine_submit():
 def edit_table_value_page(table):
     if table == 'machine':
         return render_template('edit_machine.html',
-                               customers=loads(get(url + 'api/retrieve',
-                                                   params={'fields': ['ID', 'Name'], 'table': 'customer'}).text)[
-                                   'values'],
-                               regions=loads(get(url + 'api/retrieve',
-                                                 params={'table': 'reg_center', 'fields': ['ID', 'Name']}).text)[
-                                   'values'],
-                               engineers=loads(get(url + 'api/retrieve',
-                                                   params={'table': 'engineer', 'fields': ['ID', 'Name']}).text)[
-                                   'values'])
+                               customers=get(url + 'api/retrieve',
+                                             params={'fields': ['ID', 'Name'], 'table': 'customer'},
+                                             auth=(current_user.username, current_user.auth_token)).json()['values'],
+                               regions=get(url + 'api/retrieve',
+                                           params={'table': 'reg_center', 'fields': ['ID', 'Name']},
+                                           auth=(current_user.username, current_user.auth_token)).json()['values'],
+                               engineers=get(url + 'api/retrieve',
+                                             params={'table': 'engineer', 'fields': ['ID', 'Name']},
+                                             auth=(current_user.username, current_user.auth_token)).json()['values']
+                               )
     else:
         return render_template('edit_' + table + '.html')
 
@@ -157,7 +162,7 @@ def edit_customer_submit(table):
         if len(request.form[key]) > 0:
             payload[key] = request.form[key]
     print(payload)
-    response = post(url + f'api/edit/{table}', data=payload).text
+    response = post(url + f'api/edit/{table}', data=payload, auth=(current_user.username, current_user.auth_token)).text
     if response == 'ok':
         return render_template('edit_' + table + '.html', success=table.capitalize() + " Edited")
     else:
@@ -169,8 +174,8 @@ def edit_customer_submit(table):
 @login_required
 def view_table(table):
     res = get(url + 'api/retrieve', params={'table': table, 'fields': '*'},
-              headers={'auth_token': current_user.auth_token})
-    response = loads(res.text)
+              auth=(current_user.username, current_user.auth_token))
+    response = res.json()
     return render_template('view.html',
                            fields=response['fields'],
                            values=response['values'],
@@ -191,7 +196,8 @@ def view_machine():
     params['table'] = '(machine m join engineer e on m.AllocatedTo = e.ID) join customer c on m.CustID = c.ID'
     return render_template('view.html',
                            fields=fields,
-                           values=loads(get(url + 'api/retrieve', params=params).text)['values'],
+                           values=get(url + 'api/retrieve', params=params,
+                                      auth=(current_user.username, current_user.auth_token)).json()['values'],
                            table='machine')
 
 
