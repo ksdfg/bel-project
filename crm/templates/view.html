@@ -1,27 +1,27 @@
 {% extends "base.html" %}
 
-{% block page_title %}View {{table}} details{% endblock %}
+{% block page_title %}View {{ table }} details{% endblock %}
 
 {% block full_page_content %}
-<div class="w3-responsive">
-    <table>
-        <caption><h3>List of {{table}}s</h3></caption>
-        <thead>
-        <tr>
-            {% for field in fields %}
-            <th>{{field}}</th>
+    <div class="w3-responsive">
+        <table>
+            <caption><h3>List of {{ table }}s</h3></caption>
+            <thead>
+            <tr>
+                {% for field in fields %}
+                    <th>{{ field }}</th>
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for value in values %}
+                <tr>
+                    {% for data in value %}
+                        <td>{{ data }}</td>
+                    {% endfor %}
+                </tr>
             {% endfor %}
-        </tr>
-        </thead>
-        <tbody>
-        {% for value in values %}
-        <tr>
-            {% for data in value %}
-            <td>{{data}}</td>
-            {% endfor %}
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

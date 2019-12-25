@@ -43,20 +43,21 @@
     </label>
     <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue"
               id="address" name="Address" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"></textarea>
-    <br><br>
-    <div class="w3-center">
-        <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
-    </div>
-    <input style="visibility: hidden" name="primary_key" value="ID">
-</form>
+        <br><br>
+        <div class="w3-center">
+            <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
+        </div>
+        <input style="visibility: hidden" name="primary_key" value="ID">
+    </form>
 {% endblock %}
 
 {% block msg_header_class %}
-{% if success %} class="w3-container w3-green w3-center" {% else %} class="w3-container w3-red w3-center" {% endif %}
+    {% if success %} class="w3-container w3-green w3-center" {% else %} class="w3-container w3-red w3-center"
+    {% endif %}
 {% endblock %}
 {% block msg_title %}
-{% if error %}Error{% elif success %}Success{% endif %}
+    {% if error %}Error{% elif success %}Success{% endif %}
 {% endblock %}
 {% block msg_content %}
-{% if error %}{{error}}{% elif success %}{{success}}{% endif %}
+    {% if error %}{{ error }}{% elif success %}{{ success }}{% endif %}
 {% endblock %}

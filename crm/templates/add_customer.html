@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block head_extra %}
-{% if Address %}
-<script type="application/javascript">
-    function showMessage() {
-        document.getElementById('address').innerHTML = '{{Address}}';
-        document.getElementById('message-display').style.display = 'block'
-    }
-</script>
-{% endif %}
+    {% if Address %}
+        <script type="application/javascript">
+            function showMessage() {
+                document.getElementById('address').innerHTML = '{{Address}}';
+                document.getElementById('message-display').style.display = 'block'
+            }
+        </script>
+    {% endif %}
 {% endblock %}
 
 {% block page_title %} Add Customer {% endblock %}
@@ -16,50 +16,50 @@
 {% block body_onload %}{% if success or error %} onload="showMessage()" {% endif %}{% endblock %}
 
 {% block page_content %}
-<form name="addCustomer" method="post" action="/add/customer/submit">
-    <label for="id" style="padding-left: 5%">
-        <b>ID : </b>
-    </label>
-    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="number"
-           id="id" name="ID" {% if ID %} value={{ID}} {% endif %}}
+    <form name="addCustomer" method="post">
+        <label for="id" style="padding-left: 5%">
+            <b>ID : </b>
+        </label>
+        <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="number"
+               id="id" name="ID" {% if ID %} value={{ ID }} {% endif %}}
            style="padding-left: 5%; padding-right: 5%" required>
-    <br>
-    <label for="name" style="padding-left: 5%">
-        <b>Name : </b>
-    </label>
-    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
-           id="name" name="Name" {% if Name %} value={{Name}} {% endif %}}
+        <br>
+        <label for="name" style="padding-left: 5%">
+            <b>Name : </b>
+        </label>
+        <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
+               id="name" name="Name" {% if Name %} value={{ Name }} {% endif %}}
            style="padding-left: 5%; padding-right: 5%" required>
-    <br>
-    <label for="email" style="padding-left: 5%">
-        <b>Email ID : </b>
-    </label>
-    <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
-           id="email" name="email" {%
-           if email %} value={{email}} {% endif %} onfocusout="emailValidate()"
-           style="width: 100%; padding-left: 5%; padding-right: 5%" required>
-    <br>
-    <label for="address" style="padding-left: 5%">
-        <b>Address : </b>
-    </label>
-    <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue"
-              id="address"
-              name="Address" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"
-              required></textarea>
-    <br><br>
+        <br>
+        <label for="email" style="padding-left: 5%">
+            <b>Email ID : </b>
+        </label>
+        <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
+               id="email" name="email" {% if email %} value={{ email }} {% endif %} onfocusout="emailValidate()"
+               style="width: 100%; padding-left: 5%; padding-right: 5%" required>
+        <br>
+        <label for="address" style="padding-left: 5%">
+            <b>Address : </b>
+        </label>
+        <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue"
+                  id="address"
+                  name="Address" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"
+                  required></textarea>
+        <br><br>
 
-    <div class="w3-center">
-        <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
-    </div>
-</form>
+        <div class="w3-center">
+            <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
+        </div>
+    </form>
 {% endblock %}
 
 {% block msg_header_class %}
-{% if success %} class="w3-container w3-green w3-center" {% else %} class="w3-container w3-red w3-center" {% endif %}
+    {% if success %} class="w3-container w3-green w3-center" {% else %} class="w3-container w3-red w3-center"
+    {% endif %}
 {% endblock %}
 {% block msg_title %}
-{% if error %}Error{% elif success %}Success{% endif %}
+    {% if error %}Error{% elif success %}Success{% endif %}
 {% endblock %}
 {% block msg_content %}
-{% if error %}{{error}}{% elif success %}{{success}}{% endif %}
+    {% if error %}{{ error }}{% elif success %}{{ success }}{% endif %}
 {% endblock %}

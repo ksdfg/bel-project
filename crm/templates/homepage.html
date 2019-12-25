@@ -1,203 +1,205 @@
 {% extends "base.html" %}
 
-{% block page_title %} Welcome, {{username}} {% endblock %}
+{% block page_title %} Welcome, {{ username }} {% endblock %}
 
 {% block before_content %}
-<div class="w3-sidebar w3-bar-block w3-border-right border-peacock-blue w3-col l2 s7 w3-center peacock-blue"
-     style="display:none" id="mySidebar">
-    <button onclick="document.getElementById('mySidebar').style.display = 'none'" class="w3-bar-item w3-large">Close
-        &times;
-    </button>
-    {% if role == 'bel_mgr' %}
-    <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Materials</b></p>
-    <a href="/view/material" class="w3-bar-item w3-button">Send Materials</a>
-    <a href="/view/material" class="w3-bar-item w3-button">Receive Materials</a>
-    <a href="/view/material" class="w3-bar-item w3-button">View Materials</a>
-    {% endif %}
-    {% if role == 'call_center' or role == 'bel_mgr' %}
-    <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Machines</b></p>
-    {% if role == 'call_center' %}
-    <a href="/add/machine" class="w3-bar-item w3-button">Add Machine</a>
-    <a href="/edit/machine" class="w3-bar-item w3-button">Edit Machine Details</a>
-    {% endif %}
-    <a href="/view/machine" class="w3-bar-item w3-button">View Machines</a>
-    <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Customers</b></p>
-    {% if role == 'call_center' %}
-    <a href="/add/customer" class="w3-bar-item w3-button">Add Customer</a>
-    <a href="/edit/customer" class="w3-bar-item w3-button">Edit Customer Details</a>
-    {% endif %}
-    <a href="/view/customer" class="w3-bar-item w3-button">View Customers</a>
-    {% endif %}
-    {% if role == 'bel_mgr' %}
-    <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Complaints</b></p>
-    <a href="/view/complaint" class="w3-bar-item w3-button">View Complaints</a>
-    {% endif %}
-</div>
+    <div class="w3-sidebar w3-bar-block w3-border-right border-peacock-blue w3-col l2 s7 w3-center peacock-blue"
+         style="display:none" id="mySidebar">
+        <button onclick="document.getElementById('mySidebar').style.display = 'none'" class="w3-bar-item w3-large">Close
+            &times;
+        </button>
+        {% if role == 'bel_mgr' %}
+            <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Materials</b>
+            </p>
+            <a href="/material/view" class="w3-bar-item w3-button">View Materials</a>
+        {% endif %}
+        {% if role == 'call_center' or role == 'bel_mgr' %}
+            <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Machines</b>
+            </p>
+            {% if role == 'call_center' %}
+                <a href="/machine/add" class="w3-bar-item w3-button">Add Machine</a>
+                <a href="/machine/edit" class="w3-bar-item w3-button">Edit Machine Details</a>
+            {% endif %}
+            <a href="/machine/view" class="w3-bar-item w3-button">View Machines</a>
+            <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Customers</b>
+            </p>
+            {% if role == 'call_center' %}
+                <a href="/customer/add" class="w3-bar-item w3-button">Add Customer</a>
+                <a href="/customer/edit" class="w3-bar-item w3-button">Edit Customer Details</a>
+            {% endif %}
+            <a href="/customer/view" class="w3-bar-item w3-button">View Customers</a>
+        {% endif %}
+        {% if role == 'bel_mgr' %}
+            <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Complaints</b>
+            </p>
+            <a href="/complaint/view" class="w3-bar-item w3-button">View Complaints</a>
+        {% endif %}
+    </div>
 
-<button class="w3-button w3-xlarge"
-        onclick="document.getElementById('mySidebar').style.display = 'block';">☰
-</button>
+    <button class="w3-button w3-xlarge"
+            onclick="document.getElementById('mySidebar').style.display = 'block';">☰
+    </button>
 {% endblock %}
 
 {% block full_page_content %}
-<div class="w3-responsive" id="tables">
-    {% if role == 'bel_mgr' or role == 'call_center' %}
-    <table>
-        <tbody>
-        <tr>
-            <td>Number of machines under warranty</td>
-            <td>{{warranty_in}}</td>
-        </tr>
-        <tr>
-            <td>Number of machines under amc</td>
-            <td>{{amc_in}}</td>
-        </tr>
-        <tr>
-            <td>Number of machines out of amc or warranty</td>
-            <td>{{amc_warranty_out}}</td>
-        </tr>
-        <tr>
-            <td>Total price of material to be replaced</td>
-            <td>{{scrap_money}}</td>
-        </tr>
-        </tbody>
-    </table>
-    <br><br>
-    {% endif %}
+    <div class="w3-responsive" id="tables">
+        {% if role == 'bel_mgr' or role == 'call_center' %}
+            <table>
+                <tbody>
+                <tr>
+                    <td>Number of machines under warranty</td>
+                    <td>{{ warranty_in }}</td>
+                </tr>
+                <tr>
+                    <td>Number of machines under amc</td>
+                    <td>{{ amc_in }}</td>
+                </tr>
+                <tr>
+                    <td>Number of machines out of amc or warranty</td>
+                    <td>{{ amc_warranty_out }}</td>
+                </tr>
+                <tr>
+                    <td>Total price of material to be replaced</td>
+                    <td>{{ scrap_money }}</td>
+                </tr>
+                </tbody>
+            </table>
+            <br><br>
+        {% endif %}
 
-    {% if complaints %}
-    <div class="w3-responsive">
-        <table>
-            <caption>
-                <h3>List of {% if role != 'engineer' %}high priority{% endif %} complaints :</h3>
-            </caption>
-            <thead>
-            <tr>
-                <th>Machine</th>
-                <th>Customer</th>
-                <th>Location</th>
-                {% if role != 'engineer' %}
-                <th>Engineer</th>
-                {% endif %}
-                <th>Open Since</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for comp in complaints %}
-            <tr>
-                {% for data in comp %}
-                <td>{{data}}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        {% if complaints %}
+            <div class="w3-responsive">
+                <table>
+                    <caption>
+                        <h3>List of {% if role != 'engineer' %}high priority{% endif %} complaints :</h3>
+                    </caption>
+                    <thead>
+                    <tr>
+                        <th>Machine</th>
+                        <th>Customer</th>
+                        <th>Location</th>
+                        {% if role != 'engineer' %}
+                            <th>Engineer</th>
+                        {% endif %}
+                        <th>Open Since</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for comp in complaints %}
+                        <tr>
+                            {% for data in comp %}
+                                <td>{{ data }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <br><br>
+        {% endif %}
+
+        {% if installations %}
+            <div class="w3-responsive">
+                <table>
+                    <caption><h3>Machines to be installed</h3></caption>
+                    <thead>
+                    <tr>
+                        <th>Sl No.</th>
+                        <th>Customer</th>
+                        <th>Machine Location</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for installation in installations %}
+                        <tr>
+                            {% for data in installation %}
+                                <td>{{ data }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <br><br>
+        {% endif %}
+
+        {% if pm %}
+            <div class="w3-responsive">
+                <table>
+                    <caption><h3>Upcoming Preventive Maintenance</h3></caption>
+                    <thead>
+                    <tr>
+                        <th>Machine Location</th>
+                        {% if role != 'engineer' %}
+                            <th>Engineer</th>
+                        {% endif %}
+                        <th>Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for machine in pm %}
+                        <tr>
+                            {% for data in machine %}
+                                <td>{{ data }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <br><br>
+        {% endif %}
+
+        {% if role == 'engineer' or role == 'reg_mgr' %}
+
+            <div class="w3-responsive">
+                <table>
+                    <caption><h3>List of Materials at hand</h3></caption>
+                    <thead>
+                    <tr>
+                        <th>Material Description</th>
+                        <th>Quantity</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if materials %}
+                        {% for material in materials %}
+                            <tr>
+                                {% for data in material %}
+                                    <td>{{ data }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <br><br>
+
+            <div class="w3-responsive">
+                <table>
+                    <caption><h3>List of Scrap Materials at hand</h3></caption>
+                    <thead>
+                    <tr>
+                        <th>Material Description</th>
+                        <th>Quantity</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% if scrap %}
+                        {% for material in scrap %}
+                            <tr>
+                                {% for data in material %}
+                                    <td>{{ data }}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            <br><br>
+
+        {% endif %}
     </div>
-    <br><br>
-    {% endif %}
-
-    {% if installations %}
-    <div class="w3-responsive">
-        <table>
-            <caption><h3>Machines to be installed</h3></caption>
-            <thead>
-            <tr>
-                <th>Sl No.</th>
-                <th>Customer</th>
-                <th>Machine Location</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for installation in installations %}
-            <tr>
-                {% for data in installation %}
-                <td>{{data}}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <br><br>
-    {% endif %}
-
-    {% if pm %}
-    <div class="w3-responsive">
-        <table>
-            <caption><h3>Upcoming Preventive Maintenance</h3></caption>
-            <thead>
-            <tr>
-                <th>Machine Location</th>
-                {% if role != 'engineer' %}
-                <th>Engineer</th>
-                {% endif %}
-                <th>Date</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for machine in pm %}
-            <tr>
-                {% for data in machine %}
-                <td>{{data}}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <br><br>
-    {% endif %}
-
-    {% if role == 'engineer' or role == 'reg_mgr' %}
-
-    <div class="w3-responsive">
-        <table>
-            <caption><h3>List of Materials at hand</h3></caption>
-            <thead>
-            <tr>
-                <th>Material Description</th>
-                <th>Quantity</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if materials %}
-            {% for material in materials %}
-            <tr>
-                {% for data in material %}
-                <td>{{data}}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-            {% endif %}
-            </tbody>
-        </table>
-    </div>
-    <br><br>
-
-    <div class="w3-responsive">
-        <table>
-            <caption><h3>List of Scrap Materials at hand</h3></caption>
-            <thead>
-            <tr>
-                <th>Material Description</th>
-                <th>Quantity</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% if scrap %}
-            {% for material in scrap %}
-            <tr>
-                {% for data in material %}
-                <td>{{data}}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-            {% endif %}
-            </tbody>
-        </table>
-    </div>
-    <br><br>
-
-    {% endif %}
-</div>
 {% endblock %}

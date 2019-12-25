@@ -154,9 +154,13 @@ def get_data(query):
 @app.route('/api/retrieve', methods=['GET'])
 @login_required
 def get_data_api():
+    query = (
+            f"select {', '.join(request.args.getlist('fields'))} " +
+            f"from {request.args.get('table')} " +
+            (f"where {request.args.get('conditions')}" if 'conditions' in request.args else "")
+    )
     # get values in table
-    data = {
-        'values': get_data(f"select {', '.join(request.args.getlist('fields'))} from {request.args.get('table')}")}
+    data = {'values': get_data(query)}
 
     # get all fields
     if len(request.args.get('table').split()) == 1:
@@ -171,7 +175,8 @@ def parameterize(params: list):
     for i in range(len(params)):
         if len(params[i]) == 0:  # empty field, set to null
             params[i] = None
-        elif match(r'\D', params[i]):  # non integer field, surround in ""
+        # non integer or bool field, surround in ""
+        elif match(r'\D', params[i]) and params[i] not in ['True', 'False']:
             params[i] = f'"{params[i]}"'
     return params
 
@@ -181,6 +186,10 @@ def parameterize(params: list):
 @login_required
 def add_to_table(table):
     try:
+        print(f"""
+        insert into {table}({','.join(request.form.keys())}) values
+        ({','.join(parameterize(list(request.form.values())))})
+        """)
         dbcursor.execute(f"""
         insert into {table}({','.join(request.form.keys())}) values
         ({','.join(parameterize(list(request.form.values())))})
@@ -190,6 +199,7 @@ def add_to_table(table):
     except IntegrityError:
         return f'{str(table).capitalize()} Already Exists'
     except Exception as e:
+        print_exc()
         return str(e)
 
 

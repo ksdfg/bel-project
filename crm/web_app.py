@@ -33,16 +33,19 @@ def login():
             from user 
             where username = '{request.form['username']}' and authorized = true
         """)
-        if res and bcrypt.check_password_hash(res[0][0], request.form['password']):
+
+        if len(res) == 0:  # no such user
+            return render_template('login.html', username=request.form['username'], error="Incorrect Username")
+
+        if bcrypt.check_password_hash(res[0][0], request.form['password']):
             login_user(User(username=request.form['username'], role=res[0][1], auth_token=res[0][2]))
             print(request.form['username'] + " logged in!")
             dest = request.args.get("next")
             if not is_safe_url(dest):
                 return abort(400)
             return redirect(dest)
-
-        # in case there was an error while logging in
-        return render_template('login.html', username=request.form['username'], error="Incorrect")
+        else:  # password does not match
+            return render_template('login.html', username=request.form['username'], error="Incorrect Password")
 
     if current_user.is_authenticated:  # just cuz i saw some other sites do this...
         return render_template('login.html', username=current_user.username)
@@ -68,71 +71,72 @@ def register_page():
     return render_template('register.html', role=request.args.get('role'), current_user=current_user)
 
 
-# render page to add stuff to table
-@app.route('/add/<table>')
+# authorize a login so the id can be used
+@app.route('/user/authorize', methods=['POST', 'GET'])
+@login_required
+@authorized(['call_center'])
+def authorize_user():
+    if request.method == 'POST':
+        # api call to edit user table; set authorized = true for given username
+        res = post(url + 'api/edit/user',
+                   data={'username': request.form['username'], 'authorized': True, 'primary_key': 'username'},
+                   auth=(current_user.username, current_user.auth_token)).text
+        if res == "ok":  # change happened smoothly
+            return render_template(
+                "authorize.html",
+                usernames=get(url + 'api/retrieve',
+                              params={'table': 'user', 'fields': 'username', 'conditions': "authorized = false"},
+                              auth=(current_user.username, current_user.auth_token)).json()['values'],
+                success=f"{request.form['username']} authorized for login"
+            )
+        # some error occured
+        return render_template(
+            "authorize.html",
+            usernames=get(url + 'api/retrieve',
+                          params={'table': 'user', 'fields': 'username', 'conditions': "authorized = false"},
+                          auth=(current_user.username, current_user.auth_token)).json()['values'],
+            error=res
+        )
+
+    # get call - display form
+    return render_template(
+        "authorize.html",
+        usernames=get(url + 'api/retrieve',
+                      params={'table': 'user', 'fields': 'username', 'conditions': "authorized = false"},
+                      auth=(current_user.username, current_user.auth_token)).json()['values']
+    )
+
+
+# render page to add stuff to table on get; add stuff to db on post
+@app.route('/<table>/add', methods=['GET', 'POST'])
 @login_required
 @authorized(['call_center'])
 def add_table_value_page(table):
     try:
+        variables = dict()  # dictionary for extra variables to pass to render template
         if table == 'machine':
-            return render_template('add_machine.html',
-                                   customers=get(url + 'api/retrieve',
-                                                 params={'fields': ['ID', 'Name'], 'table': 'customer'},
-                                                 auth=(current_user.username, current_user.auth_token)
-                                                 ).json()['values'],
-                                   regions=get(url + 'api/retrieve',
-                                               params={'fields': ['ID', 'Name'], 'table': 'reg_center'},
-                                               auth=(current_user.username, current_user.auth_token)
-                                               ).json()['values']
-                                   )
-        else:
-            return render_template('add_' + table + '.html')
+            variables['customers'] = get(url + 'api/retrieve',
+                                         params={'fields': ['ID', 'Name'], 'table': 'customer'},
+                                         auth=(current_user.username, current_user.auth_token)).json()['values']
+            variables['regions'] = get(url + 'api/retrieve',
+                                       params={'fields': ['ID', 'Name'], 'table': 'reg_center'},
+                                       auth=(current_user.username, current_user.auth_token)).json()['values']
+
+        if request.method == 'POST':
+            response = post(url + f'api/add/{table}', data=dict(request.form),
+                            auth=(current_user.username, current_user.auth_token)).text
+            if response == 'ok':
+                return render_template('add_' + table + '.html', success=f"{table.capitalize()} Added", **variables)
+            else:
+                return render_template('add_' + table + '.html', error=response, **variables, **request.form)
+
+        return render_template('add_' + table + '.html', **variables)
     except TemplateNotFound:
         return render_template('no_access.html')
 
 
-# add customer to db
-@app.route('/add/customer/submit', methods=['POST'])
-@login_required
-@authorized(['call_center'])
-def add_customer_submit():
-    response = post(url + 'api/add/customer', data=dict(request.form),
-                    auth=(current_user.username, current_user.auth_token)).text
-    if response == 'ok':
-        return render_template('add_customer.html', success="Customer Added")
-    else:
-        return render_template('add_customer.html', error=response, **request.form)
-
-
-# add machine to db
-@app.route('/add/machine/submit', methods=['POST'])
-@login_required
-@authorized(['call_center'])
-def add_machine_submit():
-    response = post(url + 'api/add/machine', data=dict(request.form),
-                    auth=(current_user.username, current_user.auth_token)).text
-    if response == 'ok':
-        return render_template('add_machine.html',
-                               customers=get(url + 'api/retrieve',
-                                             params={'fields': ['ID', 'Name'], 'table': 'customer'},
-                                             auth=(current_user.username, current_user.auth_token)).json()['values'],
-                               regions=get(url + 'api/retrieve',
-                                           params={'table': 'reg_center', 'fields': ['ID', 'Name']},
-                                           auth=(current_user.username, current_user.auth_token)).json()['values'],
-                               success="Machine Added")
-    else:
-        return render_template('add_machine.html',
-                               customers=get(url + 'api/retrieve',
-                                             params={'fields': ['ID', 'Name'], 'table': 'customer'},
-                                             auth=(current_user.username, current_user.auth_token)).json()['values'],
-                               regions=get(url + 'api/retrieve',
-                                           params={'table': 'reg_center', 'fields': ['ID', 'Name']},
-                                           auth=(current_user.username, current_user.auth_token)).json()['values'],
-                               error=response, **request.form)
-
-
 # render edit details page
-@app.route('/edit/<table>')
+@app.route('/<table>/edit')
 @login_required
 @authorized(['call_center'])
 def edit_table_value_page(table):
@@ -170,7 +174,7 @@ def edit_customer_submit(table):
 
 
 # view data of some table
-@app.route('/view/<table>')
+@app.route('/<table>/view')
 @login_required
 def view_table(table):
     res = get(url + 'api/retrieve', params={'table': table, 'fields': '*'},
@@ -183,7 +187,7 @@ def view_table(table):
 
 
 # view data of machines
-@app.route('/view/machine')
+@app.route('/machine/view')
 @login_required
 def view_machine():
     params = {}

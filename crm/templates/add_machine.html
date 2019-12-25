@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block head_extra %}
-{% if Address %}
-<script type="application/javascript">
-    function showMessage() {
-        document.getElementById('address').innerHTML = '{{Address}}';
-        document.getElementById('message-display').style.display = 'block'
-    }
-</script>
-{% endif %}
+    {% if Address %}
+        <script type="application/javascript">
+            function showMessage() {
+                document.getElementById('address').innerHTML = '{{Address}}';
+                document.getElementById('message-display').style.display = 'block'
+            }
+        </script>
+    {% endif %}
 {% endblock %}
 
 {% block page_title %} Add Machine {% endblock %}
@@ -16,66 +16,67 @@
 {% block body_onload %}{% if success or error %} onload="showMessage()" {% endif %}{% endblock %}
 
 {% block page_content %}
-<form name="addMachine" method="post" action="/add/machine/submit">
-    <label for="slno" style="padding-left: 5%">
-        <b>Serial Number : </b>
-    </label>
-    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="number"
-           id="slno" name="SlNo" {% if SlNo %} value={{SlNo}} {% endif %}}
+    <form name="addMachine" method="post">
+        <label for="slno" style="padding-left: 5%">
+            <b>Serial Number : </b>
+        </label>
+        <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="number"
+               id="slno" name="SlNo" {% if SlNo %} value={{ SlNo }} {% endif %}}
            style="padding-left: 5%; padding-right: 5%" required>
-    <br><br>
-    <label for="model" style="padding-left: 5%">
-        <b>Model : </b>
-    </label>
-    <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
-           id="model" name="Model" {% if Model %} value={{Model}} {% endif %}}
+        <br><br>
+        <label for="model" style="padding-left: 5%">
+            <b>Model : </b>
+        </label>
+        <input class="w3-input w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue" type="text"
+               id="model" name="Model" {% if Model %} value={{ Model }} {% endif %}}
            style="padding-left: 5%; padding-right: 5%" required>
-    <br><br>
-    <label for="customer" style="padding-left: 5%">
-        <b>Customer : </b>
-    </label>
-    <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
-            id="customer"
-            name="CustID" {% if Customer %} value={{Customer}} {% endif %}} required>
-        {% for customer in customers %}
-        <option value="{{customer[0]}}">{{customer[1]}}</option>
-        {% endfor %}
-    </select>
-    <br><br>
-    <label for="location" style="padding-left: 5%">
-        <b>Location : </b>
-    </label>
-    <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue"
-              id="location"
-              name="Location" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"
-              {% if Location %} onload="document.getElementById('location').innerHTML = '{{Location}}'"
-              {% endif %} required></textarea>
-    <br><br>
-    <label for="region" style="padding-left: 5%">
-        <b>Region : </b>
-    </label>
-    <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
-            id="region" name="Region" {% if Region %} value={{Region}} {% endif %}} required>
-        {% for region in regions %}
-        <option value="{{region[0]}}">{{region[1]}}</option>
-        {% endfor %}
-    </select>
-    <br><br>
+        <br><br>
+        <label for="customer" style="padding-left: 5%">
+            <b>Customer : </b>
+        </label>
+        <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
+                id="customer"
+                name="CustID" {% if Customer %} value={{ Customer }} {% endif %}} required>
+            {% for customer in customers %}
+                <option value="{{ customer[0] }}">{{ customer[1] }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label for="location" style="padding-left: 5%">
+            <b>Location : </b>
+        </label>
+        <textarea class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue"
+                  id="location"
+                  name="Location" rows="5" style="width: 100%; padding-right: 5%; padding-left: 5%"
+                {% if Location %} onload="document.getElementById('location').innerHTML = '{{ Location }}'"
+                {% endif %} required></textarea>
+        <br><br>
+        <label for="region" style="padding-left: 5%">
+            <b>Region : </b>
+        </label>
+        <select class="w3-select w3-round-xxlarge w3-border border-peacock-blue hover-peacock-blue"
+                id="region" name="Region" {% if Region %} value={{ Region }} {% endif %}} required>
+            {% for region in regions %}
+                <option value="{{ region[0] }}">{{ region[1] }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
 
-    <div class="w3-center">
-        <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
-    </div>
+        <div class="w3-center">
+            <input type="submit" value="Add" class="w3-btn w3-round-xxlarge peacock-blue" style="width: 130px">
+        </div>
 
-    <input style="visibility: hidden" name="Status" value="Installation Pending">
-</form>
+        <input style="visibility: hidden" name="Status" value="Installation Pending">
+    </form>
 {% endblock %}
 
 {% block msg_header_class %}
-{% if success %} class="w3-container w3-green w3-center" {% else %} class="w3-container w3-red w3-center" {% endif %}
+    {% if success %} class="w3-container w3-green w3-center" {% else %} class="w3-container w3-red w3-center"
+    {% endif %}
 {% endblock %}
 {% block msg_title %}
-{% if error %}Error{% elif success %}Success{% endif %}
+    {% if error %}Error{% elif success %}Success{% endif %}
 {% endblock %}
 {% block msg_content %}
-{% if error %}{{error}}{% elif success %}{{success}}{% endif %}
+    {% if error %}{{ error }}{% elif success %}{{ success }}{% endif %}
 {% endblock %}
