@@ -34,6 +34,10 @@
             </p>
             <a href="/complaint/view" class="w3-bar-item w3-button">View Complaints</a>
         {% endif %}
+        {% if role == 'call_center' %}
+            <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Users</b></p>
+            <a href="/user/authorize" class="w3-bar-item w3-button">Authenticate Users</a>
+        {% endif %}
     </div>
 
     <button class="w3-button w3-xlarge"
