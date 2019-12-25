@@ -5,7 +5,7 @@ from re import match
 from string import ascii_letters, digits
 from traceback import print_exc
 
-from flask import Flask, request, render_template, session
+from flask import Flask, request, render_template
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, current_user, login_required
 from mysql.connector import connect, IntegrityError
@@ -63,13 +63,6 @@ def load_user_from_request(request):
             print_exc()
             return None
     return None
-
-
-# logout if session is idle for more than certain amount of time
-@app.before_request
-def session_timeout():
-    session.permanent = True
-    app.permanent_session_lifetime = config['session-timeout']
 
 
 # wrapper to check if currently logged in user is authorized for some function

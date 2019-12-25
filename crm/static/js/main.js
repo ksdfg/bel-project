@@ -20,3 +20,35 @@ function emailValidate(tagname) {
 function showMessage() {
     document.getElementById('message-display').style.display = 'block'
 }
+
+// code to ensure user is logged out if he is inactive for more than 15 minutes
+
+var timeoutID;
+
+function setup() {
+    this.addEventListener("mousemove", resetTimer, false);
+    this.addEventListener("mousedown", resetTimer, false);
+    this.addEventListener("keypress", resetTimer, false);
+    this.addEventListener("DOMMouseScroll", resetTimer, false);
+    this.addEventListener("mousewheel", resetTimer, false);
+    this.addEventListener("touchmove", resetTimer, false);
+    this.addEventListener("MSPointerMove", resetTimer, false);
+
+    startTimer();
+}
+
+setup();
+
+function startTimer() {
+    // wait 15 seconds before calling goInactive
+    timeoutID = window.setTimeout(goInactive, 900000);
+}
+
+function resetTimer(e) {
+    window.clearTimeout(timeoutID);
+    startTimer()
+}
+
+function goInactive() {
+    window.location.href = '/logout'    // logout the user
+}
