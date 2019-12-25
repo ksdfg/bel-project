@@ -122,7 +122,7 @@ def add_table_value_page(table):
                                        params={'fields': ['ID', 'Name'], 'table': 'reg_center'},
                                        auth=(current_user.username, current_user.auth_token)).json()['values']
 
-        if request.method == 'POST':
+        if request.method == 'POST':  # post call; api call to add tuple in db
             response = post(url + f'api/add/{table}', data=dict(request.form),
                             auth=(current_user.username, current_user.auth_token)).text
             if response == 'ok':
@@ -130,47 +130,47 @@ def add_table_value_page(table):
             else:
                 return render_template('add_' + table + '.html', error=response, **variables, **request.form)
 
-        return render_template('add_' + table + '.html', **variables)
+        return render_template('add_' + table + '.html', **variables)  # get call; display html form
     except TemplateNotFound:
         return render_template('no_access.html')
 
 
 # render edit details page
-@app.route('/<table>/edit')
+@app.route('/<table>/edit', methods=['GET', 'POST'])
 @login_required
 @authorized(['call_center'])
 def edit_table_value_page(table):
-    if table == 'machine':
-        return render_template('edit_machine.html',
-                               customers=get(url + 'api/retrieve',
-                                             params={'fields': ['ID', 'Name'], 'table': 'customer'},
-                                             auth=(current_user.username, current_user.auth_token)).json()['values'],
-                               regions=get(url + 'api/retrieve',
-                                           params={'table': 'reg_center', 'fields': ['ID', 'Name']},
-                                           auth=(current_user.username, current_user.auth_token)).json()['values'],
-                               engineers=get(url + 'api/retrieve',
-                                             params={'table': 'engineer', 'fields': ['ID', 'Name']},
-                                             auth=(current_user.username, current_user.auth_token)).json()['values']
-                               )
-    else:
-        return render_template('edit_' + table + '.html')
+    try:
+        variables = dict()  # dictionary for extra variables to pass to render template
+        if table == 'machine':
+            variables['customers'] = get(url + 'api/retrieve',
+                                         params={'table': 'customer', 'fields': ['ID', 'Name']},
+                                         auth=(current_user.username, current_user.auth_token)).json()['values']
+            variables['regions'] = get(url + 'api/retrieve',
+                                       params={'table': 'reg_center', 'fields': ['ID', 'Name']},
+                                       auth=(current_user.username, current_user.auth_token)).json()['values']
+            variables['engineers'] = get(url + 'api/retrieve',
+                                         params={'table': 'engineer', 'fields': ['ID', 'Name']},
+                                         auth=(current_user.username, current_user.auth_token)).json()['values']
 
+        # post call; api call to edit tuple in db
+        if request.method == 'POST':
+            payload = dict()
+            # get all fields that are not empty i.e. need to be edited
+            for key in request.form.keys():
+                if len(request.form[key]) > 0:
+                    payload[key] = request.form[key]
 
-# edit customer details in db
-@app.route('/edit/<table>/submit', methods=['POST'])
-@login_required
-@authorized(['call_center'])
-def edit_customer_submit(table):
-    payload = dict()
-    for key in request.form.keys():
-        if len(request.form[key]) > 0:
-            payload[key] = request.form[key]
-    print(payload)
-    response = post(url + f'api/edit/{table}', data=payload, auth=(current_user.username, current_user.auth_token)).text
-    if response == 'ok':
-        return render_template('edit_' + table + '.html', success=table.capitalize() + " Edited")
-    else:
-        return render_template('edit_' + table + '.html', error=response, **request.form)
+            response = post(url + f'api/edit/{table}', data=payload,
+                            auth=(current_user.username, current_user.auth_token)).text
+            if response == 'ok':
+                return render_template('edit_' + table + '.html', success=table.capitalize() + " Edited", **variables)
+            else:
+                return render_template('edit_' + table + '.html', error=response, **request.form, **variables)
+
+        return render_template('edit_' + table + '.html', **variables)  # get call; display html form
+    except TemplateNotFound:
+        return render_template('no_access.html')
 
 
 # view data of some table
