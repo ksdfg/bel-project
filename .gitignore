@@ -8,4 +8,6 @@ notes.txt
 *.csv
 .idea
 venv
+venv_linux
 data
+__pycache__
