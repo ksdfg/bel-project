@@ -9,5 +9,6 @@ notes.txt
 .idea
 venv
 venv_linux
+venv_windows
 data
 __pycache__
