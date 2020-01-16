@@ -4,23 +4,6 @@
 
 {% block page_title %} Register {% endblock %}
 
-{% block nav_bar %}
-    <button class="w3-bar-item w3-button w3-col l2" onclick="location.href = '/';"><b>Home</b>
-    </button>
-    <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/register';">
-        <b>Register</b>
-    </button>
-    {% if current_user.is_authorized %}
-        <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/logout';">
-            <b>Logout</b>
-        </button>
-    {% else %}
-        <button class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/login';">
-            <b>Login</b>
-        </button>
-    {% endif %}
-{% endblock %}
-
 {% block page_content %}
     {% if role %}
 

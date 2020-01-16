@@ -35,21 +35,24 @@ def login():
         """)
 
         if len(res) == 0:  # no such user
-            return render_template('login.html', username=request.form['username'], error="Incorrect Username")
+            return render_template(current_user=current_user, template_name_or_list='login.html',
+                                   username=request.form['username'], error="Incorrect Username")
 
         if bcrypt.check_password_hash(res[0][0], request.form['password']):
             login_user(User(username=request.form['username'], role=res[0][1], auth_token=res[0][2]))
             print(request.form['username'] + " logged in!")
-            dest = request.args.get("next")
+            dest = request.args.get("next") if request.args.get("next") else url_for('homepage')
             if not is_safe_url(dest):
                 return abort(400)
             return redirect(dest)
         else:  # password does not match
-            return render_template('login.html', username=request.form['username'], error="Incorrect Password")
+            return render_template(current_user=current_user, template_name_or_list='login.html',
+                                   username=request.form['username'], error="Incorrect Password")
 
     if current_user.is_authenticated:  # just cuz i saw some other sites do this...
-        return render_template('login.html', username=current_user.username)
-    return render_template('login.html')
+        return render_template(current_user=current_user, template_name_or_list='login.html',
+                               username=current_user.username)
+    return render_template(current_user=current_user, template_name_or_list='login.html')
 
 
 # logout a user
@@ -67,8 +70,10 @@ def register_page():
         res = post(url + "api/add/user", data=dict(request.form)).text
         if res == 'done':
             return redirect(url_for('homepage'))
-        return render_template('register.html', **request.form, error=res)  # in case of errors
-    return render_template('register.html', role=request.args.get('role'), current_user=current_user)
+        return render_template(current_user=current_user, template_name_or_list='register.html', **request.form,
+                               error=res)  # in case of errors
+    return render_template(current_user=current_user, template_name_or_list='register.html',
+                           role=request.args.get('role'))
 
 
 # authorize a login so the id can be used
@@ -82,29 +87,33 @@ def authorize_user():
                    data={'username': request.form['username'], 'authorized': True, 'primary_key': 'username'},
                    auth=(current_user.username, current_user.auth_token)).text
         if res == "ok":  # change happened smoothly
-            return render_template(
-                "authorize.html",
-                usernames=get(url + 'api/retrieve',
-                              params={'table': 'user', 'fields': 'username', 'conditions': "authorized = false"},
-                              auth=(current_user.username, current_user.auth_token)).json()['values'],
-                success=f"{request.form['username']} authorized for login"
-            )
-        # some error occured
-        return render_template(
-            "authorize.html",
-            usernames=get(url + 'api/retrieve',
-                          params={'table': 'user', 'fields': 'username', 'conditions': "authorized = false"},
-                          auth=(current_user.username, current_user.auth_token)).json()['values'],
-            error=res
-        )
+            return render_template(current_user=current_user,
+                                   template_name_or_list="authorize.html",
+                                   usernames=get(url + 'api/retrieve',
+                                                 params={'table': 'user', 'fields': 'username',
+                                                         'conditions': "authorized = false"},
+                                                 auth=(current_user.username, current_user.auth_token)).json()[
+                                       'values'],
+                                   success=f"{request.form['username']} authorized for login"
+                                   )
+        # some error occurred
+        return render_template(current_user=current_user,
+                               template_name_or_list="authorize.html",
+                               usernames=get(url + 'api/retrieve',
+                                             params={'table': 'user', 'fields': 'username',
+                                                     'conditions': "authorized = false"},
+                                             auth=(current_user.username, current_user.auth_token)).json()['values'],
+                               error=res
+                               )
 
     # get call - display form
-    return render_template(
-        "authorize.html",
-        usernames=get(url + 'api/retrieve',
-                      params={'table': 'user', 'fields': 'username', 'conditions': "authorized = false"},
-                      auth=(current_user.username, current_user.auth_token)).json()['values']
-    )
+    return render_template(current_user=current_user,
+                           template_name_or_list="authorize.html",
+                           usernames=get(url + 'api/retrieve',
+                                         params={'table': 'user', 'fields': 'username',
+                                                 'conditions': "authorized = false"},
+                                         auth=(current_user.username, current_user.auth_token)).json()['values']
+                           )
 
 
 # render page to add stuff to table on get; add stuff to db on post
@@ -126,13 +135,16 @@ def add_table_value_page(table):
             response = post(url + f'api/add/{table}', data=dict(request.form),
                             auth=(current_user.username, current_user.auth_token)).text
             if response == 'ok':
-                return render_template('add_' + table + '.html', success=f"{table.capitalize()} Added", **variables)
+                return render_template(current_user=current_user, template_name_or_list='add_' + table + '.html',
+                                       success=f"{table.capitalize()} Added", **variables)
             else:
-                return render_template('add_' + table + '.html', error=response, **variables, **request.form)
+                return render_template(current_user=current_user, template_name_or_list='add_' + table + '.html',
+                                       error=response, **variables, **request.form)
 
-        return render_template('add_' + table + '.html', **variables)  # get call; display html form
+        return render_template(current_user=current_user, template_name_or_list='add_' + table + '.html',
+                               **variables)  # get call; display html form
     except TemplateNotFound:
-        return render_template('no_access.html')
+        return render_template(current_user=current_user, template_name_or_list='no_access.html')
 
 
 # render edit details page
@@ -164,13 +176,16 @@ def edit_table_value_page(table):
             response = post(url + f'api/edit/{table}', data=payload,
                             auth=(current_user.username, current_user.auth_token)).text
             if response == 'ok':
-                return render_template('edit_' + table + '.html', success=table.capitalize() + " Edited", **variables)
+                return render_template(current_user=current_user, template_name_or_list='edit_' + table + '.html',
+                                       success=table.capitalize() + " Edited", **variables)
             else:
-                return render_template('edit_' + table + '.html', error=response, **request.form, **variables)
+                return render_template(current_user=current_user, template_name_or_list='edit_' + table + '.html',
+                                       error=response, **request.form, **variables)
 
-        return render_template('edit_' + table + '.html', **variables)  # get call; display html form
+        return render_template(current_user=current_user, template_name_or_list='edit_' + table + '.html',
+                               **variables)  # get call; display html form
     except TemplateNotFound:
-        return render_template('no_access.html')
+        return render_template(current_user=current_user, template_name_or_list='no_access.html')
 
 
 # view data of some table
@@ -180,7 +195,7 @@ def view_table(table):
     res = get(url + 'api/retrieve', params={'table': table, 'fields': '*'},
               auth=(current_user.username, current_user.auth_token))
     response = res.json()
-    return render_template('view.html',
+    return render_template(current_user=current_user, template_name_or_list='view.html',
                            fields=response['fields'],
                            values=response['values'],
                            table=table)
@@ -198,7 +213,7 @@ def view_machine():
     fields.insert(2, 'Customer')
     params['fields'][-4] = 'e.Name'
     params['table'] = '(machine m join engineer e on m.AllocatedTo = e.ID) join customer c on m.CustID = c.ID'
-    return render_template('view.html',
+    return render_template(current_user=current_user, template_name_or_list='view.html',
                            fields=fields,
                            values=get(url + 'api/retrieve', params=params,
                                       auth=(current_user.username, current_user.auth_token)).json()['values'],
@@ -310,8 +325,7 @@ def homepage():
             where rc.username = '{current_user.username}'
         """)
 
-    return render_template(
-        'homepage.html',
-        **current_user.__dict__,
-        **data
-    )
+    return render_template(current_user=current_user,
+                           template_name_or_list='homepage.html',
+                           **data
+                           )

@@ -10,7 +10,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/w3.css') }}">
+
+    <link href="//fonts.googleapis.com/css?family=Raleway:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+
     <link rel="stylesheet" href="{{ url_for(endpoint='static', filename='css/main.css') }}">
     <script src="{{ url_for(endpoint='static', filename='js/main.js') }}"></script>
 
@@ -21,20 +25,27 @@
 </head>
 <body {% block body_onload %}{% endblock %}>
 <div class="w3-container w3-padding">
-    <span><img src="{{ url_for(endpoint='static', filename='images/bel.png') }}" alt="BEL"></span>
-    <span class="w3-display-topmiddle w3-hide-small w3-hide-medium"
-          style="margin-top: 4%; font-size: xx-large; font-style: oblique">
-        <b>{% block page_title %}{% endblock %}</b></span>
+    <img src="{{ url_for(endpoint='static', filename='images/bel.png') }}" alt="BEL">
+    <b class="w3-display-topmiddle w3-hide-small w3-hide-medium"
+       style="margin-top: 4%; font-size: xx-large; font-style: oblique">{% block page_title %}{% endblock %}</b>
 </div>
 
-<div class="w3-bar peacock-blue w3-row">
+<div class="w3-bar peacock-blue w3-row w3-margin-top" style="font-size: 20px">
     {% block nav_bar %}
-        <a class="w3-bar-item w3-button w3-col l2" onclick="location.href = '/';"><b>Home</b></a>
-        <a class="w3-bar-item w3-button w3-right w3-col l2" href="/register">
+        <a class="w3-bar-item w3-button w3-hover-white w3-col l1" onclick="location.href = '/';"><b>Home</b>
+        </a>
+        <a class="w3-bar-item w3-button w3-hover-white w3-right w3-col l1" onclick="location.href = '/register';">
             <b>Register</b>
         </a>
-        <a class="w3-bar-item w3-button w3-right w3-col l2" onclick="location.href = '/logout';"><b>Logout</b>
-        </a>
+        {% if current_user.is_authenticated %}
+            <a class="w3-bar-item w3-button w3-hover-white w3-right w3-col l1" onclick="location.href = '/logout';">
+                <b>Logout</b>
+            </a>
+        {% else %}
+            <a class="w3-bar-item w3-button w3-hover-white w3-right w3-col l1" onclick="location.href = '/login';">
+                <b>Login</b>
+            </a>
+        {% endif %}
     {% endblock %}
 </div>
 
@@ -57,7 +68,7 @@
     <div class="w3-modal-content w3-animate-top w3-card-4" style="width: 25%">
         <header id="message-header" {% block msg_header_class %} class="w3-container w3-red" {% endblock %}>
                     <span onclick="document.getElementById('message-display').style.display='none'"
-                          class="w3-button w3-display-topright">&times;</span>
+                          class="w3-button w3-hover-white w3-display-topright">&times;</span>
             <h2 id="message-title">{% block msg_title %}{% endblock %}</h2>
         </header>
         <div class="w3-container w3-center">

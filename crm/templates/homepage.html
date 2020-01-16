@@ -1,40 +1,40 @@
 {% extends "base.html" %}
 
-{% block page_title %} Welcome, {{ username }} {% endblock %}
+{% block page_title %} Welcome, {{ current_user.username }} {% endblock %}
 
 {% block before_content %}
     <div class="w3-sidebar w3-bar-block w3-border-right border-peacock-blue w3-col l2 s7 w3-center peacock-blue"
-         style="display:none" id="mySidebar">
+         style="font-size: 20px; display:none" id="mySidebar">
         <button onclick="document.getElementById('mySidebar').style.display = 'none'" class="w3-bar-item w3-large">Close
             &times;
         </button>
-        {% if role == 'bel_mgr' %}
+        {% if current_user.role == 'bel_mgr' %}
             <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Materials</b>
             </p>
             <a href="/material/view" class="w3-bar-item w3-button">View Materials</a>
         {% endif %}
-        {% if role == 'call_center' or role == 'bel_mgr' %}
+        {% if current_user.role == 'call_center' or current_user.role == 'bel_mgr' %}
             <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Machines</b>
             </p>
-            {% if role == 'call_center' %}
+            {% if current_user.role == 'call_center' %}
                 <a href="/machine/add" class="w3-bar-item w3-button">Add Machine</a>
                 <a href="/machine/edit" class="w3-bar-item w3-button">Edit Machine Details</a>
             {% endif %}
             <a href="/machine/view" class="w3-bar-item w3-button">View Machines</a>
             <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Customers</b>
             </p>
-            {% if role == 'call_center' %}
+            {% if current_user.role == 'call_center' %}
                 <a href="/customer/add" class="w3-bar-item w3-button">Add Customer</a>
                 <a href="/customer/edit" class="w3-bar-item w3-button">Edit Customer Details</a>
             {% endif %}
             <a href="/customer/view" class="w3-bar-item w3-button">View Customers</a>
         {% endif %}
-        {% if role == 'bel_mgr' %}
+        {% if current_user.role == 'bel_mgr' %}
             <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Complaints</b>
             </p>
             <a href="/complaint/view" class="w3-bar-item w3-button">View Complaints</a>
         {% endif %}
-        {% if role == 'call_center' %}
+        {% if current_user.role == 'call_center' %}
             <p class="w3-bar-item" style="background-color: white; color: var(--peacock-blue)"><b>Manage Users</b></p>
             <a href="/user/authorize" class="w3-bar-item w3-button">Authenticate Users</a>
         {% endif %}
@@ -47,7 +47,7 @@
 
 {% block full_page_content %}
     <div class="w3-responsive" id="tables">
-        {% if role == 'bel_mgr' or role == 'call_center' %}
+        {% if current_user.role == 'bel_mgr' or current_user.role == 'call_center' %}
             <table>
                 <tbody>
                 <tr>
@@ -75,14 +75,14 @@
             <div class="w3-responsive">
                 <table>
                     <caption>
-                        <h3>List of {% if role != 'engineer' %}high priority{% endif %} complaints :</h3>
+                        <h3>List of {% if current_user.role != 'engineer' %}high priority{% endif %} complaints :</h3>
                     </caption>
                     <thead>
                     <tr>
                         <th>Machine</th>
                         <th>Customer</th>
                         <th>Location</th>
-                        {% if role != 'engineer' %}
+                        {% if current_user.role != 'engineer' %}
                             <th>Engineer</th>
                         {% endif %}
                         <th>Open Since</th>
@@ -134,7 +134,7 @@
                     <thead>
                     <tr>
                         <th>Machine Location</th>
-                        {% if role != 'engineer' %}
+                        {% if current_user.role != 'engineer' %}
                             <th>Engineer</th>
                         {% endif %}
                         <th>Date</th>
@@ -154,7 +154,7 @@
             <br><br>
         {% endif %}
 
-        {% if role == 'engineer' or role == 'reg_mgr' %}
+        {% if current_user.role == 'engineer' or current_user.role == 'reg_mgr' %}
 
             <div class="w3-responsive">
                 <table>
