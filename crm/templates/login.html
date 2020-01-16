@@ -32,5 +32,13 @@
     </div>
 {% endblock %}
 
-{% block msg_title %}Error{% endblock %}
-{% block msg_content %}{% if error %}{{ error }}{% endif %}{% endblock %}
+{% block msg_header_class %}
+    {% if success %} class="w3-container w3-green w3-center" {% else %} class="w3-container w3-red w3-center"
+    {% endif %}
+{% endblock %}
+{% block msg_title %}
+    {% if error %}Error{% elif success %}Success{% endif %}
+{% endblock %}
+{% block msg_content %}
+    {% if error %}{{ error }}{% elif success %}{{ success }}{% endif %}
+{% endblock %}

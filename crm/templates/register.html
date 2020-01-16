@@ -64,6 +64,13 @@
                        maxlength="2" {% if id %} value="{{ id }}" {% endif %}
                        style="width: 100%; padding-left: 5%; padding-right: 5%" required>
                 <br><br>
+                <label for="name" style="padding-left: 5%">
+                    <b>Name : </b>
+                </label>
+                <input class="w3-input hover-peacock-blue w3-round-xxlarge w3-border border-peacock-blue" type="text"
+                       id="name" name="name" {% if name %} value="{{ name }}" {% endif %}
+                       style="width: 100%; padding-left: 5%; padding-right: 5%" required autofocus>
+                <br><br>
                 <label for="addr" style="padding-left: 5%">
                     <b>Address : </b>
                 </label>

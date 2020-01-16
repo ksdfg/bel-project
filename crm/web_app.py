@@ -69,14 +69,14 @@ def register_page():
     if request.method == 'POST':
         res = post(url + "api/add/user", data=dict(request.form)).text
         if res == 'done':
-            return redirect(url_for('homepage'))
+            return redirect(url_for('login', success="User Added!"))
         return render_template(current_user=current_user, template_name_or_list='register.html', **request.form,
                                error=res)  # in case of errors
     return render_template(current_user=current_user, template_name_or_list='register.html',
                            role=request.args.get('role'))
 
 
-# authorize a login so the id can be used
+# authorize a login so the id can be used to login
 @app.route('/user/authorize', methods=['POST', 'GET'])
 @login_required
 @authorized(['call_center'])
